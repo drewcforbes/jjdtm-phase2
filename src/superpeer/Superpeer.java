@@ -17,17 +17,21 @@ public class Superpeer {
             System.exit(1);
         }
 
-        //Start the listening thread
-        Thread listeningThread = new Thread(new SuperpeerListener());
-        listeningThread.start();
+        //Start the ClientServer listening thread
+        Thread clientServerListeningThread = new Thread(new SuperpeerClientServerListener());
+        clientServerListeningThread.start();
+
+        //Start the Superpeer listening thread
+        Thread superpeerListeningThread = new Thread(new SuperpeerToSuperpeerListener());
+        superpeerListeningThread.start();
 
         //Block for 'exit' command
-        System.out.println();
         System.out.println("Enter 'exit' to stop background processes");
         while (!console.readLine().toLowerCase().equals("exit")) {}
 
-        //Stop listening thread
-        listeningThread.interrupt();
+        //Stop listening threads
+        clientServerListeningThread.interrupt();
+        superpeerListeningThread.interrupt();
         System.exit(0);
 
     }

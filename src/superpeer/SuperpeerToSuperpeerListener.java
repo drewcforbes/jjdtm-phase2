@@ -5,26 +5,21 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-/**
- * Listens for all packets coming to the super peer.
- * Spawns new {@link SuperpeerRequestHandler} when a
- * packet is received
- */
-public class SuperpeerListener implements Runnable {
+public class SuperpeerToSuperpeerListener implements Runnable {
 
-    private final static int SUPER_PEER_PORT = 5555;
+    private final static int SUPERPEER_TO_SUPERPEER_PORT = 5556;
     private final static int PACKET_SIZE = 1024; //In bytes
 
     @Override
     public void run() {
-        System.out.println("Starting listening for requests on port " + SUPER_PEER_PORT);
+        System.out.println("Starting listening for superpeer requests on port " + SUPERPEER_TO_SUPERPEER_PORT);
         DatagramSocket socket;
 
         //Start listening
         try {
-            socket = new DatagramSocket(SUPER_PEER_PORT);
+            socket = new DatagramSocket(SUPERPEER_TO_SUPERPEER_PORT);
         } catch (SocketException e) {
-            System.err.println("FATAL: Error while opening super peer socket on port " + SUPER_PEER_PORT);
+            System.err.println("FATAL: Error while opening super peer socket on port " + SUPERPEER_TO_SUPERPEER_PORT);
             throw new RuntimeException(e);
         }
 
@@ -44,7 +39,7 @@ public class SuperpeerListener implements Runnable {
                 socket.receive(datagramPacket);
 
                 //Handle the received packet
-                new Thread(new SuperpeerRequestHandler(datagramPacket)).start();
+                new Thread(new SuperpeerToSuperpeerRequestHandler(datagramPacket)).start();
 
             } catch (IOException e) {
                 System.err.println("Error: Error while listening for incoming packet");
