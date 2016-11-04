@@ -1,6 +1,8 @@
 package clientserver;
 
 import java.io.Console;
+import java.util.Scanner;
+import java.util.logging.Logger;
 
 /**
  * Entry point for Client/Server.
@@ -10,18 +12,24 @@ import java.io.Console;
  */
 public class ClientServer {
 
+    private static Logger logger = Logger.getLogger(ClientServer.class.getName());
+
     public static void main(String[] args) {
 
         //Get the console
-        Console console = System.console();
-        if (console == null) {
+//        Console console = System.console();
+
+        Scanner scanner = new Scanner(System.in);
+
+
+        if (scanner == null) {
             System.err.println("FATAL: No console available");
             System.exit(1);
         }
 
         //Get the supernode's ip address
         System.out.print("Please enter the super node's IP address:");
-        String supernodeIp = console.readLine();
+        String supernodeIp = scanner.nextLine();
         System.out.println();
 
         //Start the client thread
@@ -33,8 +41,9 @@ public class ClientServer {
         serverThread.start();
 
         //Block for a stop command
-        System.out.println("Enter 'exit' to stop background processes");
-        while (!console.readLine().toLowerCase().equals("exit")) {}
+//        System.out.println("Enter 'exit' to stop background processes");
+        logger.info("Enter 'exit' to stop background processes");
+        while (!scanner.nextLine().toLowerCase().equals("exit")) {}
 
         //Stop the background threads (if they're still running)
         if (clientThread.isAlive()) {
