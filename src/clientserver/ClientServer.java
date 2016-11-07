@@ -1,6 +1,5 @@
 package clientserver;
 
-import java.io.Console;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -15,9 +14,6 @@ public class ClientServer {
     private static Logger logger = Logger.getLogger(ClientServer.class.getName());
 
     public static void main(String[] args) {
-
-        //Get the console
-//        Console console = System.console();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -41,7 +37,6 @@ public class ClientServer {
         serverThread.start();
 
         //Block for a stop command
-//        System.out.println("Enter 'exit' to stop background processes");
         logger.info("Enter 'exit' to stop background processes");
         while (!scanner.nextLine().toLowerCase().equals("exit")) {}
 
