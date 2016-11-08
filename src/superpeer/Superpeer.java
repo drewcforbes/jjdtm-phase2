@@ -1,6 +1,8 @@
 package superpeer;
 
-import java.io.Console;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Super peer entry point
@@ -10,29 +12,35 @@ public class Superpeer {
 
     public static void main(String[] args) {
 
-        //Get the console
-        Console console = System.console();
-        if (console == null) {
-            System.err.println("FATAL: No console available");
-            System.exit(1);
-        }
+        Map<String, String> localRoutingTable = getLocalRoutingTable();
 
         //Start the ClientServer listening thread
-        Thread clientServerListeningThread = new Thread(new SuperpeerClientServerListener());
+        Thread clientServerListeningThread = new Thread(
+                new SuperpeerClientServerListener(localRoutingTable)
+        );
         clientServerListeningThread.start();
 
         //Start the Superpeer listening thread
-        Thread superpeerListeningThread = new Thread(new SuperpeerToSuperpeerListener());
+        Thread superpeerListeningThread = new Thread(
+                new SuperpeerToSuperpeerListener(localRoutingTable)
+        );
         superpeerListeningThread.start();
 
         //Block for 'exit' command
         System.out.println("Enter 'exit' to stop background processes");
-        while (!console.readLine().toLowerCase().equals("exit")) {}
+        Scanner scanner = new Scanner(System.in);
+        while (!scanner.nextLine().toLowerCase().equals("exit")) {}
 
         //Stop listening threads
         clientServerListeningThread.interrupt();
         superpeerListeningThread.interrupt();
         System.exit(0);
 
+    }
+    
+    private static Map<String, String> getLocalRoutingTable() {
+
+        //TODO Get this from config file
+        return new HashMap<>();
     }
 }

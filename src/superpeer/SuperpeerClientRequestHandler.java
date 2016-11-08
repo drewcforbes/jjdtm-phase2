@@ -1,6 +1,7 @@
 package superpeer;
 
 import java.net.DatagramPacket;
+import java.util.Map;
 
 /**
  * Handler for all packets coming to the super peer
@@ -8,9 +9,14 @@ import java.net.DatagramPacket;
 public class SuperpeerClientRequestHandler implements Runnable {
 
     private final DatagramPacket incomingPacket;
+    private final Map<String, String> localRoutingTable;
 
-    public SuperpeerClientRequestHandler(DatagramPacket incomingPacket) {
+    public SuperpeerClientRequestHandler(
+            DatagramPacket incomingPacket,
+            Map<String, String> localRoutingTable
+    ) {
         this.incomingPacket = incomingPacket;
+        this.localRoutingTable = localRoutingTable;
     }
 
     @Override
