@@ -10,13 +10,16 @@ public class SuperpeerClientRequestHandler implements Runnable {
 
     private final DatagramPacket incomingPacket;
     private final Map<String, String> localRoutingTable;
+    private final PendingRequestHolder pendingRequestHolder;
 
     public SuperpeerClientRequestHandler(
             DatagramPacket incomingPacket,
-            Map<String, String> localRoutingTable
-    ) {
+            Map<String, String> localRoutingTable,
+            PendingRequestHolder pendingRequestHolder) {
+
         this.incomingPacket = incomingPacket;
         this.localRoutingTable = localRoutingTable;
+        this.pendingRequestHolder = pendingRequestHolder;
     }
 
     @Override

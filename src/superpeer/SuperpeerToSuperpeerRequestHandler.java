@@ -7,13 +7,16 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 
     private final DatagramPacket incomingPacket;
     private final Map<String, String> localRoutingTable;
+    private final PendingRequestHolder pendingRequestHolder;
 
     public SuperpeerToSuperpeerRequestHandler(
             DatagramPacket incomingPacket,
-            Map<String, String> localRoutingTable
-    ) {
+            Map<String, String> localRoutingTable,
+            PendingRequestHolder pendingRequestHolder) {
+
         this.incomingPacket = incomingPacket;
         this.localRoutingTable = localRoutingTable;
+        this.pendingRequestHolder = pendingRequestHolder;
     }
 
     @Override

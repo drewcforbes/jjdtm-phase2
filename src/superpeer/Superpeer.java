@@ -12,17 +12,19 @@ public class Superpeer {
 
     public static void main(String[] args) {
 
+        //Setup dependencies of the listeners
         Map<String, String> localRoutingTable = getLocalRoutingTable();
+        PendingRequestHolder pendingRequestHolder = new PendingRequestHolder();
 
         //Start the ClientServer listening thread
         Thread clientServerListeningThread = new Thread(
-                new SuperpeerClientServerListener(localRoutingTable)
+                new SuperpeerClientServerListener(localRoutingTable, pendingRequestHolder)
         );
         clientServerListeningThread.start();
 
         //Start the Superpeer listening thread
         Thread superpeerListeningThread = new Thread(
-                new SuperpeerToSuperpeerListener(localRoutingTable)
+                new SuperpeerToSuperpeerListener(localRoutingTable, pendingRequestHolder)
         );
         superpeerListeningThread.start();
 
@@ -37,7 +39,7 @@ public class Superpeer {
         System.exit(0);
 
     }
-    
+
     private static Map<String, String> getLocalRoutingTable() {
 
         //TODO Get this from config file

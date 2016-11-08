@@ -12,9 +12,14 @@ public class SuperpeerToSuperpeerListener implements Runnable {
     private final static int PACKET_SIZE = 1024; //In bytes
 
     private final Map<String, String> localRoutingTable;
+    private final PendingRequestHolder pendingRequestHolder;
 
-    public SuperpeerToSuperpeerListener(Map<String, String> localRoutingTable) {
+    public SuperpeerToSuperpeerListener(
+            Map<String, String> localRoutingTable,
+            PendingRequestHolder pendingRequestHolder
+    ) {
         this.localRoutingTable = localRoutingTable;
+        this.pendingRequestHolder = pendingRequestHolder;
     }
 
     @Override
@@ -48,7 +53,8 @@ public class SuperpeerToSuperpeerListener implements Runnable {
                 //Handle the received packet
                 new Thread(new SuperpeerToSuperpeerRequestHandler(
                         datagramPacket,
-                        localRoutingTable
+                        localRoutingTable,
+                        pendingRequestHolder
                 )).start();
 
             } catch (IOException e) {
