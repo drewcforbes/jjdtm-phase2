@@ -1,6 +1,8 @@
 package superpeer;
 
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.Map;
 
 /**
@@ -24,6 +26,40 @@ public class SuperpeerClientRequestHandler implements Runnable {
 
     @Override
     public void run() {
-        //TODO Handle incoming packets from a {@link ClientServer} here
+        //Get the client address and message
+        InetAddress clientAddr = incomingPacket.getAddress();
+        String chapter = new String(incomingPacket.getData());
+        //TODO change this address
+        String superPeer = "192.0.0.1";
+
+        //check local routing table for chapters
+        if (localRoutingTable.containsKey(chapter)) {
+            try {
+                //create the message and send it to the client
+                byte[] bufferAry = localRoutingTable.get(chapter).getBytes();
+                DatagramSocket sock = new DatagramSocket();
+                DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, receiverAddr, 5555);
+                sock.send(pack);
+                sock.close();
+            }
+            catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+        else {
+            // Add the pending request to the Map
+            pendingRequestHolder.addPendingRequest(chapter, clientAddr);
+            try {
+                //send chapter other superpeer
+                byte[] bufferAry2 = chapter.getBytes();
+                DatagramSocket sock2 = new DatagramSocket();
+                DatagramPacket pack2 = new DatagramPacket(bufferAry2, bufferAry2.length, superPeer, 5556);
+                sock2.send(pack2);
+                sock2.close();
+            }
+            catch (IOException e) {
+                System.err.println(e);
+            }
+        }
     }
 }
