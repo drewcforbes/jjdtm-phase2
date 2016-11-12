@@ -1,5 +1,6 @@
 package superpeer;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -38,7 +39,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
                 //create the message and send it to the client
                 byte[] bufferAry = localRoutingTable.get(chapter).getBytes();
                 DatagramSocket sock = new DatagramSocket();
-                DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, receiverAddr, 5555);
+                DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, incomingPacket.getAddress(), 5555);
                 sock.send(pack);
                 sock.close();
             }
@@ -48,12 +49,13 @@ public class SuperpeerClientRequestHandler implements Runnable {
         }
         else {
             // Add the pending request to the Map
-            pendingRequestHolder.addPendingRequest(chapter, clientAddr);
+            pendingRequestHolder.addPendingRequest(chapter, clientAddr.getHostAddress());
             try {
                 //send chapter other superpeer
                 byte[] bufferAry2 = chapter.getBytes();
                 DatagramSocket sock2 = new DatagramSocket();
-                DatagramPacket pack2 = new DatagramPacket(bufferAry2, bufferAry2.length, superPeer, 5556);
+                InetAddress superPeerInet = InetAddress.getByName(superPeer);
+                DatagramPacket pack2 = new DatagramPacket(bufferAry2, bufferAry2.length, superPeerInet, 5556);
                 sock2.send(pack2);
                 sock2.close();
             }
