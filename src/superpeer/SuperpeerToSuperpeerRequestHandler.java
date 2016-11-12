@@ -56,9 +56,8 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 					InetAddress clientAdr = InetAddress.getByName(client);
 					DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, clientAdr, 5555);
 					sock.send(pack);
-					sock.close();
-
 				}
+				sock.close();
 			} catch (IOException e) {
 				System.err.println(e);
 			}
