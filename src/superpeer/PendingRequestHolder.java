@@ -1,5 +1,6 @@
 package superpeer;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 //TODO Find a better name for this
 public class PendingRequestHolder {
 
+	//<chapter#, List<ipAddress>>
     private final Map<String, List<String>> pendingRequests;
 
     public PendingRequestHolder() {
@@ -33,6 +35,7 @@ public class PendingRequestHolder {
             pendingRequests.get(chapterName).add(ipAddress);
         }
     }
+    
 
     /**
      * Gets all the ip addresses of clients that are waiting for

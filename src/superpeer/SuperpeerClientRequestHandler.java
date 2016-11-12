@@ -12,6 +12,7 @@ import java.util.Map;
 public class SuperpeerClientRequestHandler implements Runnable {
 
     private final DatagramPacket incomingPacket;
+    //<chapter#, ipAddress>
     private final Map<String, String> localRoutingTable;
     private final PendingRequestHolder pendingRequestHolder;
 
