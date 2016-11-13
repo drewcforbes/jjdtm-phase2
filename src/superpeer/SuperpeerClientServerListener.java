@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Map;
 
 /**
  * Listens for all packets coming to the super peer.
@@ -14,6 +15,17 @@ public class SuperpeerClientServerListener implements Runnable {
 
     private final static int SUPER_TO_CLIENTSERVER_PEER_PORT = 5555;
     private final static int PACKET_SIZE = 1024; //In bytes
+
+    private final Map<String, String> localRoutingTable;
+    private final PendingRequestHolder pendingRequestHolder;
+
+    public SuperpeerClientServerListener(
+            Map<String, String> localRoutingTable,
+            PendingRequestHolder pendingRequestHolder
+    ) {
+        this.localRoutingTable = localRoutingTable;
+        this.pendingRequestHolder = pendingRequestHolder;
+    }
 
     @Override
     public void run() {
@@ -44,7 +56,11 @@ public class SuperpeerClientServerListener implements Runnable {
                 socket.receive(datagramPacket);
 
                 //Handle the received packet
-                new Thread(new SuperpeerClientRequestHandler(datagramPacket)).start();
+                new Thread(new SuperpeerClientRequestHandler(
+                        datagramPacket,
+                        localRoutingTable,
+                        pendingRequestHolder
+                )).start();
 
             } catch (IOException e) {
                 System.err.println("Error: Error while listening for incoming packet");

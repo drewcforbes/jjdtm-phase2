@@ -17,12 +17,6 @@ public class ClientServer {
 
         Scanner scanner = new Scanner(System.in);
 
-
-        if (scanner == null) {
-            System.err.println("FATAL: No console available");
-            System.exit(1);
-        }
-
         //Get the supernode's ip address
         System.out.print("Please enter the super node's IP address:");
         String supernodeIp = scanner.nextLine();
