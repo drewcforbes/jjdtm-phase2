@@ -3,12 +3,18 @@ package superpeer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 /**
- * Super peer entry point
- * Starts listening threads and waits for an 'exit' command
+ * Super peer entry point.
+ * Starts listening threads and waits for an 'exit' command.
+ * <p>
+ * Before you run a Superpeer on your computer, get the IP addresses of any ClientServers that will be categorized under
+ * your Superpeer and add them to src/config/network.properties .
  */
 public class Superpeer {
+
+    private static final Logger LOGGER = Logger.getLogger(Superpeer.class.getName());
 
     public static void main(String[] args) {
 
@@ -29,9 +35,10 @@ public class Superpeer {
         superpeerListeningThread.start();
 
         //Block for 'exit' command
-        System.out.println("Enter 'exit' to stop background processes");
+        LOGGER.info("Enter 'exit' to stop background processes");
         Scanner scanner = new Scanner(System.in);
-        while (!scanner.nextLine().toLowerCase().equals("exit")) {}
+        while (!scanner.nextLine().toLowerCase().equals("exit")) {
+        }
 
         //Stop listening threads
         clientServerListeningThread.interrupt();
@@ -40,7 +47,13 @@ public class Superpeer {
 
     }
 
+    /**
+     * Gets a map where the keys are the list of ClientServers on this Superpeer and the values are their IP addresses.
+     *
+     * @return
+     */
     private static Map<String, String> getLocalRoutingTable() {
+
 
         //TODO Get this from config file
         return new HashMap<>();

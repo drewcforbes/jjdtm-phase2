@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 
 /**
- * Created by smyrna on 11/7/2016.
+ * Created by Drew Forbes on 11/7/2016.
  */
 public class DivineComedySplitter {
 
