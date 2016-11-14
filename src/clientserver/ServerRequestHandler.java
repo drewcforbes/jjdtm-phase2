@@ -16,5 +16,7 @@ public class ServerRequestHandler implements Runnable {
     @Override
     public void run() {
         //TODO Handle incoming request here
+        // TODO: Reference the filestoserve folder created in ClientServer main()
+
     }
 }
