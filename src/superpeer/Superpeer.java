@@ -1,7 +1,11 @@
 package superpeer;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -16,7 +20,22 @@ public class Superpeer {
 
     private static final Logger LOGGER = Logger.getLogger(Superpeer.class.getName());
 
+    private static Properties properties = new Properties();
+
+    private static String nodeId;
+
     public static void main(String[] args) {
+        /*
+        Read properties to use as configs.
+         */
+        try {
+
+            properties.load(new FileInputStream("src/application.properties"));
+        } catch (IOException e) {
+            LOGGER.warning("Failed to load properties file.");
+            e.printStackTrace();
+        }
+        nodeId = properties.getProperty("mymachine");
 
         //Setup dependencies of the listeners
         Map<String, String> localRoutingTable = getLocalRoutingTable();
@@ -53,9 +72,33 @@ public class Superpeer {
      * @return
      */
     private static Map<String, String> getLocalRoutingTable() {
+        String clientServer1Name;
+        String clientServer2Name;
+        String clientServer1IPAddress;
+        String clientServer2IPAddress;
 
+        if (nodeId.equalsIgnoreCase("SPA")) {
+            clientServer1Name = "A1";
+            clientServer2Name = "A2";
+        } else if (nodeId.equalsIgnoreCase("SPB")) {
+            clientServer1Name = "B1";
+            clientServer2Name = "B2";
+        } else {
+            LOGGER.severe("Error in application.properties. mymachine must be SPA or SPB. mymachine was wrongly set" +
+                    "to " + nodeId);
+            return new HashMap<>();
+        }
+        clientServer1IPAddress = properties.getProperty("clientserver1ip");
+        clientServer2IPAddress = properties.getProperty("clientserver2ip");
 
-        //TODO Get this from config file
-        return new HashMap<>();
+        Map<String, String> localRoutingTable = new HashMap<String, String>();
+        localRoutingTable.put(clientServer1Name, clientServer1IPAddress);
+        localRoutingTable.put(clientServer2Name, clientServer2IPAddress);
+
+        LOGGER.info("Loaded configs for Superpeer: \n" + "NodeId:\t" + nodeId +
+                "\nClientServer1:\t" + clientServer1Name + "\t" + clientServer1IPAddress +
+                "\nClientServer2:\t" + clientServer2Name + "\t" + clientServer2IPAddress);
+
+        return localRoutingTable;
     }
 }
