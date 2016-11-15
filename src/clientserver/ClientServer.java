@@ -1,7 +1,9 @@
 package clientserver;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -32,23 +34,7 @@ public class ClientServer {
         }
         nodeId = properties.getProperty("mymachine");
 
-        // TODO: Create a folder for files to serve
-        // TODO: Fill the filestoserve folder with the appropriate files based on nodeId
-
-        if (nodeId.equalsIgnoreCase("A1")) {
-
-        } else if (nodeId.equalsIgnoreCase("A2")) {
-
-        } else if (nodeId.equalsIgnoreCase("B1")) {
-
-        } else if (nodeId.equalsIgnoreCase("B2")) {
-
-        } else {
-            LOGGER.severe("Error in application.properties. mymachine must be A1, A2, B1, or B2. mymachine was wrongly " +
-                    "set to " + nodeId);
-        }
-
-        // TODO: Create a folder for files downloaded
+        setUpFileSystem();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -77,5 +63,70 @@ public class ClientServer {
         }
 
         System.exit(0);
+    }
+    private static void setUpFileSystem(){
+        // TODO: Fill the filestoserve folder with the appropriate files based on nodeId
+        // TODO: Make the number of chapters a config so it can easily be changed for different types of runs.
+        int numberOfChaptersPerNode = 25;
+
+        int startingIndex = 1;
+
+        if (nodeId.equalsIgnoreCase("A1")) {
+            startingIndex = 1;
+        } else if (nodeId.equalsIgnoreCase("A2")) {
+            startingIndex = 1 + 1 * numberOfChaptersPerNode;
+        } else if (nodeId.equalsIgnoreCase("B1")) {
+            startingIndex = 1 + 2 * numberOfChaptersPerNode;
+        } else if (nodeId.equalsIgnoreCase("B2")) {
+            startingIndex = 1 + 3 * numberOfChaptersPerNode;
+        } else {
+            LOGGER.severe("Error in application.properties. mymachine must be A1, A2, B1, or B2. mymachine was wrongly " +
+                    "set to " + nodeId);
+            System.exit(0);
+        }
+        // TODO: Delete any existing filestoserve and filesdownloaded (Make it a Gradle project?)
+
+        // TODO: Create a folder for files to serve
+
+        Path currentDirectoryPath = Paths.get("");
+        String currentDirectory = currentDirectoryPath.toAbsolutePath().toString();
+        new File(currentDirectory + File.separator + "filestoserve").mkdir();
+
+        int endingIndex = startingIndex + numberOfChaptersPerNode; // Actually endingIndex plus 1
+        for(int i = startingIndex; i < endingIndex; i++) {
+            copyChapterToFilesToServe(i);
+        }
+
+        // TODO: Create a folder for files downloaded
+        new File(currentDirectory + File.separator + "filesdownloaded").mkdir();
+    }
+
+    private static void copyChapterToFilesToServe(int chapterNumber) {
+        Path currentDirectoryPath = Paths.get("");
+        String currentDirectory = currentDirectoryPath.toAbsolutePath().toString();
+
+        File sourceChapter = new File(currentDirectory + File.separator + "chapters" + File.separator + "Chapter_" +
+                chapterNumber + ".txt");
+        File copiedFile = new File(currentDirectory + File.separator + "filestoserve" + File.separator + "Chapter_" +
+                chapterNumber + ".txt");
+
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            inputStream = new FileInputStream(sourceChapter);
+            outputStream = new FileOutputStream(copiedFile);
+
+            //copy the file content in bytes
+            byte[] buffer = new byte[1024];
+            int readLength;
+            while ((readLength = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, readLength);
+            }
+
+            inputStream.close();
+            outputStream.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 }
