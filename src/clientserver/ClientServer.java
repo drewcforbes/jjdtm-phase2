@@ -65,7 +65,7 @@ public class ClientServer {
         System.exit(0);
     }
     private static void setUpFileSystem(){
-        // TODO: Fill the filestoserve folder with the appropriate files based on nodeId
+        //Fill the filestoserve folder with the appropriate files based on nodeId
         // TODO: Make the number of chapters a config so it can easily be changed for different types of runs.
         int numberOfChaptersPerNode = 25;
 
@@ -84,21 +84,40 @@ public class ClientServer {
                     "set to " + nodeId);
             System.exit(0);
         }
-        // TODO: Delete any existing filestoserve and filesdownloaded (Make it a Gradle project?)
-
-        // TODO: Create a folder for files to serve
 
         Path currentDirectoryPath = Paths.get("");
         String currentDirectory = currentDirectoryPath.toAbsolutePath().toString();
-        new File(currentDirectory + File.separator + "filestoserve").mkdir();
 
-        int endingIndex = startingIndex + numberOfChaptersPerNode; // Actually endingIndex plus 1
+        // Create a folder for files to serve
+        File filesToServeFolder = new File(currentDirectory + File.separator + "filestoserve");
+        deleteExistingFolder(filesToServeFolder);
+        filesToServeFolder.mkdir();
+
+        // Create a folder for files downloaded
+        File filesDownloadedFolder = new File(currentDirectory + File.separator + "filesdownloaded");
+        deleteExistingFolder(filesDownloadedFolder);
+        filesDownloadedFolder.mkdir();
+
+        // Put the appropriate files in the filestoserve folder
+        int endingIndex = startingIndex + numberOfChaptersPerNode;
+        // Actually endingIndex plus 1, e.g. 101 to stop with chapter 100
         for(int i = startingIndex; i < endingIndex; i++) {
             copyChapterToFilesToServe(i);
         }
 
-        // TODO: Create a folder for files downloaded
-        new File(currentDirectory + File.separator + "filesdownloaded").mkdir();
+    }
+
+    /**
+     * Deletes an existing folder
+     */
+    private static void deleteExistingFolder(File folderToDelete) {
+        String[]entries = folderToDelete.list();
+        if (entries != null) {
+            for (String s : entries) {
+                File currentFile = new File(folderToDelete.getPath(), s);
+                currentFile.delete();
+            }
+        }
     }
 
     private static void copyChapterToFilesToServe(int chapterNumber) {
