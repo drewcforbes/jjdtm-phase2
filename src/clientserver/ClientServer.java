@@ -129,8 +129,8 @@ public class ClientServer {
         File copiedFile = new File(currentDirectory + File.separator + "filestoserve" + File.separator + "Chapter_" +
                 chapterNumber + ".txt");
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+        InputStream inputStream;
+        OutputStream outputStream;
         try {
             inputStream = new FileInputStream(sourceChapter);
             outputStream = new FileOutputStream(copiedFile);
