@@ -2,6 +2,9 @@ package clientserver;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -18,7 +21,7 @@ public class ClientRunnable implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(ClientRunnable.class.getName());
 
     private final String supernodeIp;
-
+    private InetAddress SuperAddress;
     private String nodeId;
 
     private static Properties properties = new Properties();
@@ -35,6 +38,7 @@ public class ClientRunnable implements Runnable {
         try {
 
             properties.load(new FileInputStream("src/application.properties"));
+            
         } catch (IOException e) {
             LOGGER.warning("Failed to load properties file.");
             e.printStackTrace();
@@ -71,8 +75,46 @@ public class ClientRunnable implements Runnable {
         /*
         Start loop
          */
+        
+        
+        
         // Send a UDP request to your Superpeer for the IP address of the ClientServer that has the desired chapter
 
+        //chaptersToDownload
+         Integer Chapter;
+         try {
+         SuperAddress = InetAddress.getByName(supernodeIp);}
+         catch (IOException e) {
+	            System.err.println(e);
+	        }
+         
+         
+         //TODO Research and implement a way to throttle this for loop. Possible problem
+         //is by sending the request out without some locking mechanism, some problems 
+         //could occur. 
+         
+        for (int i = 0; i < chaptersToDownload.size(); i++) {
+			Chapter = chaptersToDownload.get(i);			
+			try {
+	            //send request to local cluster super peer'
+	        	byte[] buffer = new byte[Chapter];        	
+	            DatagramSocket sock = new DatagramSocket();
+	            DatagramPacket pack = new DatagramPacket(buffer, buffer.length,SuperAddress , CLIENT_AND_SUPERNODE_PORT);
+	            
+	            sock.send(pack);
+	            sock.close();
+	        }
+	        catch (IOException e) {
+	            System.err.println(e);
+	        }
+		}
+        
+        
+        
+        //CLIENT_AND_SUPERNODE_PORT
+        
+        
+        
         // Make a TCP connection to that IP address and download the file.
         /*
         End loop
