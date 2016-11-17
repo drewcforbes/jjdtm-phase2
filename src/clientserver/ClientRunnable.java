@@ -1,17 +1,13 @@
 package clientserver;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-<<<<<<< HEAD
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.ArrayList;
+import config.ClientServerConfig;
+
+import java.io.*;
+import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Properties;
-=======
-import java.util.*;
->>>>>>> origin/master
 import java.util.logging.Logger;
 
 /**
@@ -21,176 +17,131 @@ import java.util.logging.Logger;
 public class ClientRunnable implements Runnable {
 
     private final static int CLIENT_AND_SUPERNODE_PORT = 5555;
+    private final static int CLIENT_SERVER_PORT = 5554;
 
     private static final Logger LOGGER = Logger.getLogger(ClientRunnable.class.getName());
 
-    private final String supernodeIp;
-<<<<<<< HEAD
-    private InetAddress SuperAddress;
-    private String nodeId;
-=======
->>>>>>> origin/master
+    private final ClientServerConfig config;
 
-    private static Properties properties = new Properties();
-
-    private String nodeId;
-
-    public ClientRunnable(String supernodeIp) {
-        this.supernodeIp = supernodeIp;
+    public ClientRunnable(ClientServerConfig config) {
+        this.config = config;
     }
 
     @Override
     public void run() {
-        /*
-        Read properties to use as configs.
-         */
-        try {
-            properties.load(new FileInputStream("src/application.properties"));
-            
-        } catch (IOException e) {
-            LOGGER.warning("Failed to load properties file.");
-            e.printStackTrace();
-        }
-        // Read the identity of this node
-        nodeId = properties.getProperty("mymachine");
 
-        // Make a list of files to download
-        Set<Integer> chaptersToDownload = makeChaptersToDownload();
+        List<Integer> neededChapters = config.getChaptersNeeded();
 
         //Print the list of files to download to the console
         StringBuilder stringBuilder = new StringBuilder();
-        for(Integer entry: chaptersToDownload) {
-            stringBuilder.append(entry + " ");
+        for(Integer entry: neededChapters) {
+            stringBuilder.append(entry).append(", ");
         }
-        LOGGER.info("ClientServer " + nodeId + " will download chapters " + stringBuilder.toString());
+        LOGGER.info("ClientServer: Will download chapters " + stringBuilder.toString());
 
+        DatagramSocket sock;
+        try {
+            sock = new DatagramSocket(CLIENT_AND_SUPERNODE_PORT);
+        } catch (SocketException e) {
+            System.err.println("FATAL: ClientRunnable: Couldn't open datagram socket: " + e.getMessage());
+            return;
+        }
 
-        // TODO: Download the list of files
+        //Clear and recreate the downloaded directory
+        String downloadedDirectory = "downloaded";
+        try {
+            Path downloadedDirectoryPath = Paths.get(downloadedDirectory);
 
-        /*
-        Start loop
-         */
-        
-        
-        
-        // Send a UDP request to your Superpeer for the IP address of the ClientServer that has the desired chapter
+            Files.deleteIfExists(downloadedDirectoryPath);
+            Files.createDirectory(downloadedDirectoryPath);
+        } catch (IOException e) {
+            System.err.println("FATAL: ClientRunnable: Couldn't delete/create downloaded directory: " + e.getMessage());
+            return;
+        }
 
-        //chaptersToDownload
-         Integer Chapter;
-         try {
-         SuperAddress = InetAddress.getByName(supernodeIp);}
-         catch (IOException e) {
-	            System.err.println(e);
-	        }
-         
-         
-         //TODO Research and implement a way to throttle this for loop. Possible problem
-         //is by sending the request out without some locking mechanism like this:
-         //(1) Need chapter x 
-         //(2) Send to super....back from super is ip having chatper
-         //(3) TCP connect to peer
-         //(4) Process file 
-         //(5) Continue for loop to process next chapter 
-         
-         
-        for (int i = 0; i < chaptersToDownload.size(); i++) {
-			Chapter = chaptersToDownload.get(i);			
+        //Get the chapters now
+        for (int i = 0; i < neededChapters.size(); i++) {
+			int chapter = neededChapters.get(i);
+            FileOutputStream output;
+
+            try {
+                File outputFile = Files.createFile(Paths.get(downloadedDirectory + '/' + chapter)).toFile();
+                output = new FileOutputStream(outputFile);
+            } catch (IOException e) {
+                System.err.println("ERROR: ClientRunnable: Error creating the output file for chapter " + chapter + ": " + e.getMessage());
+                continue;
+            }
+
+            //Send request to superpeer for the other ClientServer's ip corresponding to the chapter we need
+            byte[] buffer = new byte[1024];
+            DatagramPacket packet;
 			try {
-	            //send request to local cluster super peer'
-	        	byte[] buffer = new byte[Chapter];        	
-	            DatagramSocket sock = new DatagramSocket();
-	            DatagramPacket pack = new DatagramPacket(buffer, buffer.length,SuperAddress , CLIENT_AND_SUPERNODE_PORT);
-	            
-	            sock.send(pack);
-	            sock.close();
+                packet = new DatagramPacket(buffer, buffer.length, config.getSuperpeerAddress(), CLIENT_AND_SUPERNODE_PORT);
+                sock.send(packet);
+	        } catch (IOException e) {
+	            System.err.println("ERROR: ClientRunnable: Couldn't send request to superpeer: " + e.getMessage());
+                continue;
 	        }
-	        catch (IOException e) {
-	            System.err.println(e);
-	        }
-		}
-        
-        
-        
-         
-        
-        
-        // Make a TCP connection to that IP address and download the file.
-        /*
-        End loop
-         */
-    }
 
-    /**
-     * Returns a Set of Integers representing all chapters that a ClientServer needs to download.
-     * @return
-     */
-    private Set<Integer> makeChaptersToDownload() {
+	        //Get response from superpeer
+            try {
+                sock.receive(packet);
+            } catch (IOException e) {
+                System.err.println("ERROR: ClientRunnable: Couldn't receive the response from superpeer: " + e.getMessage());
+                continue;
+            }
 
-        // Make a list of all chapters needed to be finished, including the ones this ClientServer starts with
-        Set<Integer> allChaptersNeeded = makeAllChaptersNeeded();
+            //Get the address of the server from the packet
+            String packetContents = new String(packet.getData());
+            InetAddress serverAddress;
+            try {
+                serverAddress = InetAddress.getByName(packetContents);
+            } catch (UnknownHostException e) {
+                System.err.println("ERROR: ClientRunnable: Couldn't get ip address from" +
+                        " the data that was gotten from the superpeer: " + packetContents);
+                continue;
+            }
 
-        Set<Integer> chaptersNotNeeded = makeChaptersNotNeeded();
+            //Make a connection to the server
+            Socket serverSocket;
+            try {
+                serverSocket = new Socket(serverAddress, CLIENT_SERVER_PORT);
+            } catch (IOException e) {
+                System.err.println("ERROR: ClientRunnable: Couldn't connect to other server: " + e.getMessage());
+                continue;
+            }
 
-        /* Subtract the chapters the ClientServer starts with from the set of all chapters to get the list of chapters
-         to download
-          */
-        allChaptersNeeded.removeAll(chaptersNotNeeded);
-        return allChaptersNeeded;
-    }
+            //Make an output print writer and a buffered reader for communicating with the other server
+            PrintWriter out;
+            BufferedReader in;
+            try {
+                out = new PrintWriter(serverSocket.getOutputStream());
+                in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+            } catch (IOException e) {
+                System.err.println("ERROR: ClientRunnable: Couldn't create print " +
+                        "writer or buffered reader for server: " + e.getMessage());
+                continue;
+            }
 
-    /**
-     * Returns a Set of Integers representing the chapters that this ClientServer does not need to download.
-     * @return
-     */
-    private Set<Integer> makeChaptersNotNeeded() {
+            //Make the request to the other server for the chapter
+            out.append(String.valueOf(chapter));
+            out.flush();
 
-        /* Set a clientServerIndex according to the identity of the ClientServer. clientServerIndex is used to set the
-        correct chapters that this ClientServer does not need to download.
-         */
-        int clientServerIndex = 0;
-        if (nodeId.equalsIgnoreCase("A1")) {
-            clientServerIndex = 0;
-        } else if (nodeId.equalsIgnoreCase("A2")) {
-            clientServerIndex = 1;
-        } else if (nodeId.equalsIgnoreCase("B1")) {
-            clientServerIndex = 2;
-        } else if (nodeId.equalsIgnoreCase("B2")) {
-            clientServerIndex = 3;
-        } else {
-            LOGGER.severe("Error in application.properties. mymachine must be A1, A2, B1, or B2. mymachine was wrongly " +
-                    "set to " + nodeId);
-            System.exit(0);
+            //Read the response from the server and write it to a file
+            String input;
+            try {
+                while ((input = in.readLine()) != null) {
+                    output.write(input.getBytes());
+                }
+                output.flush();
+            } catch (IOException e) {
+                System.err.println("ERROR: ClientRunnable: Couldn't read from server or write to file: " + e.getMessage());
+                continue;
+            }
+
+            System.out.println("INFO: ClientServer successfully got chapter " + chapter);
         }
 
-        /* Set the starting and ending chapters in the set of chapters this ClientServer does not need to download.
-         */
-        int chaptersPerClientServer = Integer.parseInt(properties.getProperty("chaptersperclientserver"));
-        int startingChapter = 1 + clientServerIndex * chaptersPerClientServer;
-        int endingChapter = startingChapter + chaptersPerClientServer - 1;
-
-        /* Build the set of chapters not needed by this ClientServer
-         */
-        Set<Integer> chaptersNotNeeded = new HashSet<>();
-        for (int i = startingChapter; i <= endingChapter; i++) {
-            chaptersNotNeeded.add(new Integer(i));
-        }
-        return chaptersNotNeeded;
     }
 
-    /**
-     * Makes a Set of Integers representing all chapters each ClientServer will need. EG with 25 chapters per
-     * ClientServer, returns a Set of Integers 1 to 100. Or, with 10 chapters per ClientServer, returns a Set of
-     * Integers 1 to 40.
-     * @return
-     */
-    private Set<Integer> makeAllChaptersNeeded() {
-        Set<Integer> allChaptersNeeded = new HashSet<>();
-        int chaptersPerClientServer = Integer.parseInt(properties.getProperty("chaptersperclientserver"));
-        // Always assume the number of ClientServers is 4.
-        int totalNumberOfChapters = 4 * chaptersPerClientServer;
-        for (int i = 1; i <= totalNumberOfChapters; i++) {
-            allChaptersNeeded.add(new Integer(i));
-        }
-        return allChaptersNeeded;
-    }
 }

@@ -1,5 +1,7 @@
 package superpeer;
 
+import config.SuperpeerConfig;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,18 +13,20 @@ import java.util.Map;
  */
 public class SuperpeerClientRequestHandler implements Runnable {
 
+    private final static Integer SUPERPEER_PORT = 5556;
+    private final static Integer SUPERPEER_CLIENT_SERVER_PORT = 5555;
+
     private final DatagramPacket incomingPacket;
-    //<chapter#, ipAddress>
-    private final Map<String, String> localRoutingTable;
+    private final SuperpeerConfig config;
     private final PendingRequestHolder pendingRequestHolder;
 
     public SuperpeerClientRequestHandler(
             DatagramPacket incomingPacket,
-            Map<String, String> localRoutingTable,
+            SuperpeerConfig config,
             PendingRequestHolder pendingRequestHolder) {
 
         this.incomingPacket = incomingPacket;
-        this.localRoutingTable = localRoutingTable;
+        this.config = config;
         this.pendingRequestHolder = pendingRequestHolder;
     }
 
@@ -30,38 +34,50 @@ public class SuperpeerClientRequestHandler implements Runnable {
     public void run() {
         //Get the client address and message
         InetAddress clientAddr = incomingPacket.getAddress();
-        String chapter = new String(incomingPacket.getData());
-        //TODO change this address
-        String superPeer = "192.0.0.1";
+        String packetData = new String(incomingPacket.getData());
+        Integer chapter = Integer.getInteger(packetData);
+
+        Map<Integer, String> routingTable = config.getClientChapterLookupTable();
 
         //check local routing table for chapters
-        if (localRoutingTable.containsKey(chapter)) {
+        if (routingTable.containsKey(chapter)) {
             try {
                 //create the message and send it to the client
-                byte[] bufferAry = localRoutingTable.get(chapter).getBytes();
+                byte[] bufferAry = routingTable.get(chapter).getBytes();
                 DatagramSocket sock = new DatagramSocket();
-                DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, incomingPacket.getAddress(), 5555);
+                DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, incomingPacket.getAddress(), SUPERPEER_CLIENT_SERVER_PORT);
                 sock.send(pack);
                 sock.close();
             }
             catch (IOException e) {
-                System.err.println(e);
+                System.err.println("ERROR: SuperpeerClientRequestHandler: " + e.getMessage());
             }
         }
+
         else {
             // Add the pending request to the Map
-            pendingRequestHolder.addPendingRequest(chapter, clientAddr.getHostAddress());
+            pendingRequestHolder.addPendingRequest(packetData, clientAddr.getHostAddress());
             try {
                 //send chapter other superpeer
-                byte[] bufferAry2 = chapter.getBytes();
-                DatagramSocket sock2 = new DatagramSocket();
-                InetAddress superPeerInet = InetAddress.getByName(superPeer);
-                DatagramPacket pack2 = new DatagramPacket(bufferAry2, bufferAry2.length, superPeerInet, 5556);
-                sock2.send(pack2);
-                sock2.close();
+                byte[] bufferAry2 = packetData.getBytes();
+                DatagramSocket sock = new DatagramSocket();
+                DatagramPacket pack;
+
+                for (String superpeer : config.getOtherSuperpeerIps()) {
+
+                    try {
+                        InetAddress superPeerInet = InetAddress.getByName(superpeer);
+                        pack = new DatagramPacket(bufferAry2, bufferAry2.length, superPeerInet, SUPERPEER_PORT);
+                        sock.send(pack);
+                    } catch (IOException e) {
+                        System.err.println("ERROR: SuperpeerClientRequestHandler: Problem sending request to other superpeers: " + e.getMessage());
+                    }
+                }
+
+                sock.close();
             }
             catch (IOException e) {
-                System.err.println(e);
+                System.err.println("ERROR: SuperpeerClientRequestHandler: Problem closing socket: " + e.getMessage());
             }
         }
     }

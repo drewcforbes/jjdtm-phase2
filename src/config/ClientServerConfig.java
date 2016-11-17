@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,6 +11,7 @@ public class ClientServerConfig {
 
     private List<Integer> chaptersNeeded;
     private InetAddress superpeerAddress;
+    private String directoryChar;
 
     public ClientServerConfig() {
         Properties properties = new Properties();
@@ -37,6 +37,9 @@ public class ClientServerConfig {
         } catch (UnknownHostException e) {
             System.err.println("ClientServerConfig: Couldn't parse superpeer ip address: " + superpeerIp);
         }
+
+        //Get the directory character
+        properties.getProperty("directoryCharacter");
     }
 
     public List<Integer> getChaptersNeeded() {
@@ -45,5 +48,9 @@ public class ClientServerConfig {
 
     public InetAddress getSuperpeerAddress() {
         return superpeerAddress;
+    }
+
+    public String getDirectoryChar() {
+        return directoryChar;
     }
 }

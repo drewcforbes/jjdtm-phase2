@@ -1,5 +1,7 @@
 package superpeer;
 
+import config.SuperpeerConfig;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -15,7 +17,7 @@ public class SuperpeerToSuperpeerListener implements Runnable {
     private final PendingRequestHolder pendingRequestHolder;
 
     public SuperpeerToSuperpeerListener(
-            Map<String, String> localRoutingTable,
+            SuperpeerConfig localRoutingTable,
             PendingRequestHolder pendingRequestHolder
     ) {
         this.localRoutingTable = localRoutingTable;

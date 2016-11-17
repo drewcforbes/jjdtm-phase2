@@ -1,10 +1,11 @@
 package superpeer;
 
+import config.SuperpeerConfig;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Map;
 
 /**
  * Listens for all packets coming to the super peer.
@@ -16,14 +17,14 @@ public class SuperpeerClientServerListener implements Runnable {
     private final static int SUPER_TO_CLIENTSERVER_PEER_PORT = 5555;
     private final static int PACKET_SIZE = 1024; //In bytes
 
-    private final Map<String, String> localRoutingTable;
+    private final SuperpeerConfig config;
     private final PendingRequestHolder pendingRequestHolder;
 
     public SuperpeerClientServerListener(
-            Map<String, String> localRoutingTable,
+            SuperpeerConfig config,
             PendingRequestHolder pendingRequestHolder
     ) {
-        this.localRoutingTable = localRoutingTable;
+        this.config = config;
         this.pendingRequestHolder = pendingRequestHolder;
     }
 
@@ -58,7 +59,7 @@ public class SuperpeerClientServerListener implements Runnable {
                 //Handle the received packet
                 new Thread(new SuperpeerClientRequestHandler(
                         datagramPacket,
-                        localRoutingTable,
+                        config,
                         pendingRequestHolder
                 )).start();
 

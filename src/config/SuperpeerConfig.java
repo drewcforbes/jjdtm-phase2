@@ -4,14 +4,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class SuperpeerConfig {
 
-    private Map<Integer, InetAddress> clientChapterLookupTable;
+    private Map<Integer, String> clientChapterLookupTable;
     private List<String> otherSuperpeerIps;
 
     public SuperpeerConfig() {
@@ -33,17 +30,11 @@ public class SuperpeerConfig {
             return;
         }
 
+
         clientChapterLookupTable = new HashMap<>();
         for (int i = 0; i < clientIps.length; i++) {
 
-            //Parse the client address
-            InetAddress clientAddress;
-            try {
-                clientAddress = InetAddress.getByName(clientIps[i]);
-            } catch (UnknownHostException e) {
-                System.err.println("FATAL: SuperpeerConfig: Couldn't parse client ip address: " + clientIps[i]);
-                return;
-            }
+            String clientAddress = clientIps[i];
 
             //Create the chapters and assign them to the client address
             String[] bounds = clientChapters[i].split("-");
@@ -51,13 +42,19 @@ public class SuperpeerConfig {
                     Integer.parseInt(bounds[0]),
                     Integer.parseInt(bounds[1])
             );
+
+            //Put the chapters in the lookuptable with the client's address
             for (Integer chapter : chapters) {
                 clientChapterLookupTable.put(chapter, clientAddress);
             }
         }
+
+        //Load the other superpeer ids
+        String unparsedSuperpeerIps = properties.getProperty("otherSuperpeerIps");
+        otherSuperpeerIps = Arrays.asList(unparsedSuperpeerIps.split(","));
     }
 
-    public Map<Integer, InetAddress> getClientChapterLookupTable() {
+    public Map<Integer, String> getClientChapterLookupTable() {
         return clientChapterLookupTable;
     }
 
