@@ -22,10 +22,6 @@ public class Superpeer {
 
     private static final Logger LOGGER = Logger.getLogger(Superpeer.class.getName());
 
-    private static Properties properties = new Properties();
-
-    private static String nodeId;
-
     public static void main(String[] args) {
 
         //Setup dependencies of the listeners
