@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
+//test again to see if working james
 /**
  * Handles an incoming server request from a client.
  */
@@ -24,24 +24,25 @@ public class ServerRequestHandler implements Runnable {
         this.stats = stats;
 
       //(A) Receive a TCP connection,
-        try 
-    	{    	
-    	   out = new PrintWriter(clientRequestSocket.getOutputStream(), true);
-		   in = new BufferedReader(new InputStreamReader(clientRequestSocket.getInputStream()));
-    
-		}
-    	
-		catch (IOException e) 
-    	{
-            System.err.println("Client failed to connect.");            
-        }
-    }
+     
 
     @Override
     public void run() {
         //TODO Handle incoming request here
         // TODO: Reference the filestoserve folder created in ClientServer main()
-    	
+    	   try 
+       	{    	
+       	   out = new PrintWriter(clientRequestSocket.getOutputStream(), true);
+   		   in = new BufferedReader(new InputStreamReader(clientRequestSocket.getInputStream()));
+       
+   		}
+       	
+   		catch (IOException e) 
+       	{
+               System.err.println("Client failed to connect.");            
+           }
+       }
+    
     	// Initial sends/receives
     	try
 		{
