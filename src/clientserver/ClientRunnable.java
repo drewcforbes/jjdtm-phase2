@@ -90,8 +90,13 @@ public class ClientRunnable implements Runnable {
          
          
          //TODO Research and implement a way to throttle this for loop. Possible problem
-         //is by sending the request out without some locking mechanism, some problems 
-         //could occur. 
+         //is by sending the request out without some locking mechanism like this:
+         //(1) Need chapter x 
+         //(2) Send to super....back from super is ip having chatper
+         //(3) TCP connect to peer
+         //(4) Process file 
+         //(5) Continue for loop to process next chapter 
+         
          
         for (int i = 0; i < chaptersToDownload.size(); i++) {
 			Chapter = chaptersToDownload.get(i);			
@@ -111,8 +116,7 @@ public class ClientRunnable implements Runnable {
         
         
         
-        //CLIENT_AND_SUPERNODE_PORT
-        
+         
         
         
         // Make a TCP connection to that IP address and download the file.
