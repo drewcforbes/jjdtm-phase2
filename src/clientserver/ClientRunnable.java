@@ -19,6 +19,8 @@ public class ClientRunnable implements Runnable {
 
     private static Properties properties = new Properties();
 
+    private String nodeId;
+
     public ClientRunnable(String supernodeIp) {
         this.supernodeIp = supernodeIp;
     }
@@ -34,9 +36,19 @@ public class ClientRunnable implements Runnable {
             LOGGER.warning("Failed to load properties file.");
             e.printStackTrace();
         }
+        // Read the identity of this node
+        nodeId = properties.getProperty("mymachine");
 
         // Make a list of files to download
         Set<Integer> chaptersToDownload = makeChaptersToDownload();
+
+        //Print the list of files to download to the console
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Integer entry: chaptersToDownload) {
+            stringBuilder.append(entry + " ");
+        }
+        LOGGER.info("ClientServer " + nodeId + " will download chapters " + stringBuilder.toString());
+
 
         // TODO: Download the list of files
 
@@ -74,8 +86,6 @@ public class ClientRunnable implements Runnable {
      * @return
      */
     private Set<Integer> makeChaptersNotNeeded() {
-        // Read the identity of this node
-        String nodeId = properties.getProperty("mymachine");
 
         /* Set a clientServerIndex according to the identity of the ClientServer. clientServerIndex is used to set the
         correct chapters that this ClientServer does not need to download.
@@ -99,7 +109,7 @@ public class ClientRunnable implements Runnable {
          */
         int chaptersPerClientServer = Integer.parseInt(properties.getProperty("chaptersperclientserver"));
         int startingChapter = 1 + clientServerIndex * chaptersPerClientServer;
-        int endingChapter = startingChapter + chaptersPerClientServer;
+        int endingChapter = startingChapter + chaptersPerClientServer - 1;
 
         /* Build the set of chapters not needed by this ClientServer
          */

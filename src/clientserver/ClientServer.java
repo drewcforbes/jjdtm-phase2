@@ -66,8 +66,7 @@ public class ClientServer {
     }
     private static void setUpFileSystem(){
         //Fill the filestoserve folder with the appropriate files based on nodeId
-        // TODO: Make the number of chapters a config so it can easily be changed for different types of runs.
-        int numberOfChaptersPerNode = 25;
+        int numberOfChaptersPerNode = Integer.parseInt(properties.getProperty("chaptersperclientserver"));
 
         int startingIndex = 1;
 
