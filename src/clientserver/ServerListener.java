@@ -1,6 +1,6 @@
 package clientserver;
 
-import stats.ClientServerStats;
+import stats.clientserver.ClientChapterPacketGetStats;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,9 +15,9 @@ public class ServerListener implements Runnable {
 
     private static final int SERVER_LISTENER_PORT = 5554;
 
-    private ClientServerStats stats;
+    private ClientChapterPacketGetStats stats;
 
-    public ServerListener(ClientServerStats stats) {
+    public ServerListener(ClientChapterPacketGetStats stats) {
         this.stats = stats;
     }
 

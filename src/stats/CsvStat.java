@@ -8,5 +8,5 @@ public interface CsvStat {
 
     List<String> getKeys();
 
-    List<List<Object>> getValues();
+    List<List<Long>> getValues();
 }

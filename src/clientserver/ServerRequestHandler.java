@@ -1,6 +1,6 @@
 package clientserver;
 
-import stats.ClientServerStats;
+import stats.clientserver.ClientChapterPacketGetStats;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,12 +14,12 @@ import java.net.Socket;
 public class ServerRequestHandler implements Runnable {
 
     private final Socket clientRequestSocket;
-    private final ClientServerStats stats;
+    private final ClientChapterPacketGetStats stats;
     private PrintWriter out; // writers (for writing back to the machine and to destination)
     private BufferedReader in; // reader (for reading from the machine connected to)
     private String ChapterRequested; // communication strings
 
-    public ServerRequestHandler(Socket clientRequestSocket, ClientServerStats stats) {
+    public ServerRequestHandler(Socket clientRequestSocket, ClientChapterPacketGetStats stats) {
         this.clientRequestSocket = clientRequestSocket;
         this.stats = stats;
 

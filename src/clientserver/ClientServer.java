@@ -1,14 +1,9 @@
 package clientserver;
 
 import config.ClientServerConfig;
-import stats.ClientServerStats;
+import stats.clientserver.ClientChapterPacketGetStats;
 import stats.CsvStatHelper;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -27,10 +22,11 @@ public class ClientServer {
         Scanner scanner = new Scanner(System.in);
 
         ClientServerConfig config = new ClientServerConfig();
-        ClientServerStats stats = new ClientServerStats();
+        ClientChapterPacketGetStats stats = new ClientChapterPacketGetStats();
 
         //Start the client thread
-        Thread clientThread = new Thread(new ClientRunnable(config, stats));
+        ClientRunnable clientRunnable = new ClientRunnable(config);
+        Thread clientThread = new Thread(clientRunnable);
         clientThread.start();
 
         //Start the server thread to listen for incoming requests from clients
@@ -50,7 +46,7 @@ public class ClientServer {
         }
 
         //Write the stats we've gained
-        CsvStatHelper.writeStat(stats);
+        CsvStatHelper.writeAllStats(clientRunnable.getClientCsvStats());
 
         System.exit(0);
     }

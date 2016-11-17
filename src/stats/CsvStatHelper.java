@@ -54,7 +54,7 @@ public class CsvStatHelper {
 
         //Print the values to the file
         StringJoiner joiner;
-        for (List<Object> values : stat.getValues()) {
+        for (List<Long> values : stat.getValues()) {
             joiner = new StringJoiner(",");
 
             for (Object val : values) {
@@ -62,6 +62,12 @@ public class CsvStatHelper {
             }
 
             writer.println(joiner.toString());
+        }
+    }
+
+    public static void writeAllStats(List<CsvStat> clientCsvStats) {
+        for (CsvStat stat : clientCsvStats) {
+            writeStat(stat);
         }
     }
 }
