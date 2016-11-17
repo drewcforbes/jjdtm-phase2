@@ -2,16 +2,13 @@ package clientserver;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-<<<<<<< HEAD
+//<<<<<<< HEAD
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-=======
+//=======
 import java.util.*;
->>>>>>> origin/master
+//>>>>>>> origin/master
 import java.util.logging.Logger;
 
 /**
@@ -25,15 +22,15 @@ public class ClientRunnable implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(ClientRunnable.class.getName());
 
     private final String supernodeIp;
-<<<<<<< HEAD
+//<<<<<<< HEAD
     private InetAddress SuperAddress;
     private String nodeId;
-=======
->>>>>>> origin/master
+//=======
+//>>>>>>> origin/master
 
     private static Properties properties = new Properties();
 
-    private String nodeId;
+    //private String nodeId;
 
     public ClientRunnable(String supernodeIp) {
         this.supernodeIp = supernodeIp;
@@ -77,6 +74,7 @@ public class ClientRunnable implements Runnable {
 
         //chaptersToDownload
          Integer Chapter;
+         
          try {
          SuperAddress = InetAddress.getByName(supernodeIp);}
          catch (IOException e) {
@@ -87,14 +85,18 @@ public class ClientRunnable implements Runnable {
          //TODO Research and implement a way to throttle this for loop. Possible problem
          //is by sending the request out without some locking mechanism like this:
          //(1) Need chapter x 
-         //(2) Send to super....back from super is ip having chatper
+         //(2) Send to super....back from super is ip having chapter
          //(3) TCP connect to peer
          //(4) Process file 
          //(5) Continue for loop to process next chapter 
          
+ 		// iterate via "iterator loop"
+ 		
+ 		Iterator<Integer> ChapterIterator = chaptersToDownload.iterator();
+ 		       
          
         for (int i = 0; i < chaptersToDownload.size(); i++) {
-			Chapter = chaptersToDownload.get(i);			
+        	Chapter = ((Iterator<Integer>) chaptersToDownload).next();
 			try {
 	            //send request to local cluster super peer'
 	        	byte[] buffer = new byte[Chapter];        	
