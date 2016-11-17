@@ -1,6 +1,7 @@
 package clientserver;
 
 import config.ClientServerConfig;
+import stats.ClientServerStats;
 
 import java.io.*;
 import java.net.*;
@@ -23,7 +24,7 @@ public class ClientRunnable implements Runnable {
 
     private final ClientServerConfig config;
 
-    public ClientRunnable(ClientServerConfig config) {
+    public ClientRunnable(ClientServerConfig config, ClientServerStats stats) {
         this.config = config;
     }
 

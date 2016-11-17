@@ -1,6 +1,8 @@
 package clientserver;
 
 import config.ClientServerConfig;
+import stats.ClientServerStats;
+import stats.CsvStatHelper;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -25,13 +27,14 @@ public class ClientServer {
         Scanner scanner = new Scanner(System.in);
 
         ClientServerConfig config = new ClientServerConfig();
+        ClientServerStats stats = new ClientServerStats();
 
         //Start the client thread
-        Thread clientThread = new Thread(new ClientRunnable(config));
+        Thread clientThread = new Thread(new ClientRunnable(config, stats));
         clientThread.start();
 
         //Start the server thread to listen for incoming requests from clients
-        Thread serverThread = new Thread(new ServerListener());
+        Thread serverThread = new Thread(new ServerListener(stats));
         serverThread.start();
 
         //Block for a stop command
@@ -45,6 +48,9 @@ public class ClientServer {
         if (serverThread.isAlive()) {
             serverThread.interrupt();
         }
+
+        //Write the stats we've gained
+        CsvStatHelper.writeStat(stats);
 
         System.exit(0);
     }

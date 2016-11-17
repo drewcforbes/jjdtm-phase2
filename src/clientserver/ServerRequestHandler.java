@@ -1,5 +1,7 @@
 package clientserver;
 
+import stats.ClientServerStats;
+
 import java.net.Socket;
 
 /**
@@ -8,9 +10,11 @@ import java.net.Socket;
 public class ServerRequestHandler implements Runnable {
 
     private final Socket clientRequestSocket;
+    private final ClientServerStats stats;
 
-    public ServerRequestHandler(Socket clientRequestSocket) {
+    public ServerRequestHandler(Socket clientRequestSocket, ClientServerStats stats) {
         this.clientRequestSocket = clientRequestSocket;
+        this.stats = stats;
     }
 
     @Override
