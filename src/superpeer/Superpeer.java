@@ -43,13 +43,11 @@ public class Superpeer {
         //Block for 'exit' command
         LOGGER.info("Enter 'exit' to stop background processes");
         Scanner scanner = new Scanner(System.in);
-        while (!scanner.nextLine().toLowerCase().equals("exit")) {
-        }
+        while (!scanner.nextLine().toLowerCase().equals("exit")) {}
 
         //Stop listening threads
         clientServerListeningThread.interrupt();
         superpeerListeningThread.interrupt();
         System.exit(0);
-
     }
 }

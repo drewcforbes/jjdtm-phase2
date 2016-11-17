@@ -1,6 +1,7 @@
 package superpeer;
 
-import java.net.InetAddress;
+import util.Pair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Map;
 public class PendingRequestHolder {
 
 	//<chapter#, List<ipAddress>>
-    private final Map<String, List<String>> pendingRequests;
+    private final Map<String, List<Pair<String, Long>>> pendingRequests;
 
     public PendingRequestHolder() {
         pendingRequests = new HashMap<>();
@@ -21,7 +22,6 @@ public class PendingRequestHolder {
      * requests waiting for the given chapter.
      *
      * Note: This method is threadsafe
-     *
      * @param chapterName The chapter the ip address is waiting on
      * @param ipAddress The ip address to add
      */
@@ -32,7 +32,7 @@ public class PendingRequestHolder {
                 pendingRequests.put(chapterName, new ArrayList<>());
             }
 
-            pendingRequests.get(chapterName).add(ipAddress);
+            pendingRequests.get(chapterName).add(new Pair<>(ipAddress, System.nanoTime()));
         }
     }
     
@@ -46,11 +46,12 @@ public class PendingRequestHolder {
      *
      * @param chapterName The chapter to get the pending requests for
      * @return The list of ip addresses that have requested the chapter
+     *          and the time they started being pending
      */
-    public List<String> getPendingRequestsForChapter(String chapterName) {
+    public List<Pair<String, Long>> getPendingRequestsForChapter(String chapterName) {
 
         synchronized (pendingRequests) {
-            List<String> ipAddresses = pendingRequests.get(chapterName);
+            List<Pair<String, Long>> ipAddresses = pendingRequests.get(chapterName);
             pendingRequests.put(chapterName, new ArrayList<>());
             return ipAddresses;
         }

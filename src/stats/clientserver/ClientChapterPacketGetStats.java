@@ -9,8 +9,8 @@ import java.util.List;
 public class ClientChapterPacketGetStats implements CsvStat {
 
     private final List<String> keys = Arrays.asList(
-            "Individual chapter packet from Server time (ns)",
-            "Individual chapter packet size (bytes)"
+            "Individual file packet from Server time (ns)",
+            "Individual file packet size (bytes)"
     );
 
     private List<Long> chapterPacketTransferTime = new ArrayList<>();

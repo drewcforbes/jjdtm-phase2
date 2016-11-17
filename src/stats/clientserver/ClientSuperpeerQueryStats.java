@@ -20,7 +20,7 @@ public class ClientSuperpeerQueryStats implements CsvStat {
 
     @Override
     public String getFileName() {
-        return "clientSuperpeerQueryStats.txt";
+        return "clientSuperpeerQueryStats.csv";
     }
 
     @Override

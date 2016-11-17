@@ -39,11 +39,17 @@ public class SuperpeerClientRequestHandler implements Runnable {
 
         Map<Integer, String> routingTable = config.getClientChapterLookupTable();
 
+        long routingTableLookupStart = System.nanoTime();
+        boolean hasIp = routingTable.containsKey(chapter);
+        String clientIp = hasIp ? routingTable.get(chapter) : null;
+        long routingTableLookupFinish = System.nanoTime();
+        //TODO Routing table lookup stats
+
         //check local routing table for chapters
-        if (routingTable.containsKey(chapter)) {
+        if (hasIp) {
             try {
                 //create the message and send it to the client
-                byte[] bufferAry = routingTable.get(chapter).getBytes();
+                byte[] bufferAry = clientIp.getBytes();
                 DatagramSocket sock = new DatagramSocket();
                 DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, incomingPacket.getAddress(), SUPERPEER_CLIENT_SERVER_PORT);
                 sock.send(pack);
@@ -52,9 +58,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
             catch (IOException e) {
                 System.err.println("ERROR: SuperpeerClientRequestHandler: " + e.getMessage());
             }
-        }
-
-        else {
+        } else {
             // Add the pending request to the Map
             pendingRequestHolder.addPendingRequest(packetData, clientAddr.getHostAddress());
             try {

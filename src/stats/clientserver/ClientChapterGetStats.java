@@ -9,7 +9,7 @@ import java.util.List;
 public class ClientChapterGetStats implements CsvStat {
 
     private final List<String> keys = Arrays.asList(
-            "Client getting chapter from Server time (ns)"
+            "Client getting file from Server time (ns)"
     );
 
     private List<Long> totalChapterGetTime = new ArrayList<>();
@@ -20,7 +20,7 @@ public class ClientChapterGetStats implements CsvStat {
 
     @Override
     public String getFileName() {
-        return "clientChapterGetStats.txt";
+        return "clientChapterGetStats.csv";
     }
 
     @Override
