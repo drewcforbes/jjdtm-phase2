@@ -57,7 +57,7 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 					String message = chapter + " " + clientIp + " r";
 					byte[] bufferArr = message.getBytes();
 					DatagramSocket sock = new DatagramSocket();
-                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, InetAddress.getByName(content[0]),
+                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, InetAddress.getByName(content[1]),
 							5556);
 					sock.send(pack);
 					sock.close();
