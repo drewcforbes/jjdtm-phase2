@@ -1,9 +1,6 @@
 package stats;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +45,7 @@ public class CsvStatHelper {
 
         if (writer == null) {
             try {
-                writer = new PrintWriter(statFile);
+                writer = new PrintWriter(new FileOutputStream(statFileString, true));
             } catch (FileNotFoundException e) {
                 System.err.println("FATAL: CsvStatHelper: Couldn't create print writer: " + e.getMessage());
                 return;
