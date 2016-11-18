@@ -121,6 +121,7 @@ public class ClientRunnable implements Runnable {
 
 	        //Get response from superpeer
             try {
+                packet = new DatagramPacket(new byte[1024], 1024);
                 sock.receive(packet);
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Couldn't receive the response from superpeer: " + e.getMessage());
@@ -167,7 +168,7 @@ public class ClientRunnable implements Runnable {
             }
 
             //Make the request to the other server for the chapter
-            out.append(String.valueOf(chapter));
+            out.println(String.valueOf(chapter));
             out.flush();
 
             long totalSize = 0;
@@ -181,7 +182,7 @@ public class ClientRunnable implements Runnable {
                     input = in.readLine();
                     long chapterPacketFinish = System.nanoTime();
 
-                    if (input != null) {
+                    if (input == null) {
                         break;
                     }
 
