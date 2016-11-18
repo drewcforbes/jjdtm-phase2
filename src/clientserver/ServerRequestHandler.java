@@ -62,8 +62,11 @@ public class ServerRequestHandler implements Runnable {
             long fileLength = file.length();
             long current = 0;
 
+            long totalRequestTime = 0;
+            long totalReadTime = 0;
+
             long start = System.nanoTime();
-            while(current!=fileLength) {
+            while (current != fileLength) {
                 int size = 10000;
                 if(fileLength - current >= size) {
                     current += size;
@@ -72,12 +75,26 @@ public class ServerRequestHandler implements Runnable {
                     current = fileLength;
                 }
                 contents = new byte[size];
+
+                long readStart = System.nanoTime();
                 bis.read(contents, 0, size);
+                long readTime = System.nanoTime() - readStart;
+                totalReadTime += readTime;
+                serverPacketStats.addPacketReadTime(readTime);
+
+                long writeStart = System.nanoTime();
                 out.write(contents);
-                System.out.print("Sending file ... "+(current*100)/fileLength+"% complete!");
+                long writeTime = System.nanoTime() - writeStart;
+                totalRequestTime += writeTime;
+                serverPacketStats.addPacketSendTime(writeTime);
+
+                System.out.print("Sending file ... " + (current*100) / fileLength + "% complete!");
+                out.flush();
             }
 
-            out.flush();
+            serverRequestStats.addTotalRequestTimes(totalRequestTime);
+            serverRequestStats.addFileReadTimes(totalReadTime);
+
             //File transfer done. Close the socket connection!
             bis.close();
             clientRequestSocket.close();   //JP Watch this for possible bug

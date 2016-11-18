@@ -4,6 +4,7 @@ import config.ClientServerConfig;
 import stats.CsvStat;
 import stats.clientserver.ClientAllChapterRequestsStats;
 import stats.clientserver.ClientChapterGetStats;
+import stats.clientserver.ClientChapterPacketStats;
 import stats.clientserver.ClientSuperpeerQueryStats;
 
 import java.io.*;
@@ -29,7 +30,7 @@ public class ClientRunnable implements Runnable {
     private final ClientServerConfig config;
     private final List<CsvStat> clientCsvStats;
 
-    private final ClientChapterPacketGetStats clientChapterPacketGetStats;
+    private final ClientChapterPacketStats clientChapterPacketStats;
     private final ClientChapterGetStats clientChapterGetStats;
     private final ClientSuperpeerQueryStats clientSuperpeerQueryStats;
     private final ClientAllChapterRequestsStats clientAllChapterRequestsStats;
@@ -37,14 +38,14 @@ public class ClientRunnable implements Runnable {
     public ClientRunnable(ClientServerConfig config) {
         this.config = config;
 
-        this.clientChapterPacketGetStats = new ClientChapterPacketGetStats();
+        this.clientChapterPacketStats = new ClientChapterPacketStats();
         this.clientChapterGetStats = new ClientChapterGetStats();
         this.clientSuperpeerQueryStats = new ClientSuperpeerQueryStats();
         this.clientAllChapterRequestsStats = new ClientAllChapterRequestsStats();
 
         clientCsvStats = Arrays.asList(
                 clientChapterGetStats,
-                clientChapterPacketGetStats,
+                clientChapterPacketStats,
                 clientSuperpeerQueryStats,
                 clientAllChapterRequestsStats
         );
@@ -163,6 +164,8 @@ public class ClientRunnable implements Runnable {
             out.append(String.valueOf(chapter));
             out.flush();
 
+            long totalSize = 0;
+
             //Read the response from the server and write it to a file
             String input;
             try {
@@ -176,10 +179,12 @@ public class ClientRunnable implements Runnable {
                         break;
                     }
 
-                    clientChapterPacketGetStats.addChapterPacketTransferTime(chapterPacketFinish - chapterPacketStart);
+                    clientChapterPacketStats.addChapterPacketTransferTime(chapterPacketFinish - chapterPacketStart);
                     byte[] bytes = input.getBytes();
                     output.write(bytes);
-                    clientChapterPacketGetStats.addChapterPacketSize(bytes.length);
+
+                    totalSize += bytes.length;
+                    clientChapterPacketStats.addChapterPacketSize(bytes.length);
                 }
                 output.flush();
             } catch (IOException e) {
@@ -189,6 +194,7 @@ public class ClientRunnable implements Runnable {
             }
             long totalChapterTimeFinish = System.nanoTime();
             clientChapterGetStats.addTotalChapterGetTime(totalChapterTimeFinish - totalChapterTimeStart);
+            clientChapterGetStats.addTotalChapterSize(totalSize);
 
             System.out.println("INFO: ClientServer successfully got chapter " + chapter);
 

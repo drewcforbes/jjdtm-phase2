@@ -55,15 +55,24 @@ public class CsvStatHelper {
             }
         }
 
+        //Get the length of the longest set of values
+        int longest = 0;
+        for (List<Long> values : stat.getValues()) {
+            longest = Math.max(longest, values.size());
+        }
+
         //Print the values to the file
         StringJoiner joiner;
-        for (List<Long> values : stat.getValues()) {
-            joiner = new StringJoiner(",");
+        for (int i = 0; i < longest; i++) {
 
-            for (Object val : values) {
-                joiner.add(val.toString());
+            //Stripe the data so that there's one value from
+            // each set per line (or a blank placeholder)
+            joiner = new StringJoiner(",");
+            for (List<Long> values : stat.getValues()) {
+                joiner.add(i >= values.size() ? " " : values.get(i).toString());
             }
 
+            //Write the line to the file
             writer.println(joiner.toString());
         }
     }

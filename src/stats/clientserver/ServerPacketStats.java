@@ -10,14 +10,20 @@ public class ServerPacketStats implements CsvStat {
 
     private final List<String> keys = Arrays.asList(
             "Packet send time (ns)",
+            "Packet read time (ns)",
             "Packet size (bytes)"
     );
 
     private List<Long> packetSendTimes = new ArrayList<>();
+    private List<Long> packetReadTimes = new ArrayList<>();
     private List<Long> packetSize = new ArrayList<>();
 
     public void addPacketSendTime(long time) {
         packetSendTimes.add(time);
+    }
+
+    public void addPacketReadTime(long time) {
+        packetReadTimes.add(time);
     }
 
     public void addPacketSize(long size) {
@@ -26,18 +32,19 @@ public class ServerPacketStats implements CsvStat {
 
     @Override
     public String getFileName() {
-        return null;
+        return "serverPacketStats.csv";
     }
 
     @Override
     public List<String> getKeys() {
-        return null;
+        return keys;
     }
 
     @Override
     public List<List<Long>> getValues() {
         return Arrays.asList(
                 packetSendTimes,
+                packetReadTimes,
                 packetSize
         );
     }

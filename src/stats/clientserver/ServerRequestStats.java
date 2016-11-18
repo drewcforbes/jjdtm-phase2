@@ -22,11 +22,11 @@ public class ServerRequestStats implements CsvStat {
          totalRequestTimes.add(time);
     }
 
-    public void setFileReadTimes(long time) {
+    public void addFileReadTimes(long time) {
         fileReadTimes.add(time);
     }
 
-    public void setTotalFileSendTime(long time) {
+    public void addTotalFileSendTime(long time) {
         totalFileSendTime.add(time);
     }
 
