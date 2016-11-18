@@ -79,7 +79,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
             pendingRequestHolder.addPendingRequest(packetData, clientAddr.getHostAddress());
             try {
                 //send chapter other superpeer
-                byte[] bufferAry2 = (config.getMyIp() + " " + chapter).getBytes();
+                byte[] bufferAry2 = (chapter + " " + config.getMyIp()).getBytes();
                 DatagramSocket sock = new DatagramSocket();
                 DatagramPacket pack;
 
