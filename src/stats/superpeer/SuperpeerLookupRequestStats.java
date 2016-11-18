@@ -6,21 +6,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SuperpeerRoutingTableLookupStats implements CsvStat {
+public class SuperpeerLookupRequestStats implements CsvStat {
 
     private final List<String> keys = Arrays.asList(
-            "Superpeer routing table lookup (ns)"
+            "Superpeer to Superpeer IP address lookup (ns)"
     );
 
-    private List<Long> routingTableLookupTimes = new ArrayList<>();
+    private final List<Long> superpeerLookupRequestTimes = new ArrayList<>();
 
-    public void addRoutingTableLookupTime(long time) {
-        routingTableLookupTimes.add(time);
+    public void addSuperpeerLookupRequestTime(long time) {
+        superpeerLookupRequestTimes.add(time);
     }
 
     @Override
     public String getFileName() {
-        return "superpeerRoutingTableLookup.csv";
+        return "superpeerLookupRequestStats.csv";
     }
 
     @Override
@@ -31,7 +31,7 @@ public class SuperpeerRoutingTableLookupStats implements CsvStat {
     @Override
     public List<List<Long>> getValues() {
         return Arrays.asList(
-                routingTableLookupTimes
+                superpeerLookupRequestTimes
         );
     }
 }

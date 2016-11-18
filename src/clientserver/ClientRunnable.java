@@ -1,10 +1,11 @@
 package clientserver;
 
 import config.ClientServerConfig;
+import stats.CsvStat;
+import stats.clientserver.ClientAllChapterRequestsStats;
 import stats.clientserver.ClientChapterGetStats;
 import stats.clientserver.ClientChapterPacketGetStats;
 import stats.clientserver.ClientSuperpeerQueryStats;
-import stats.CsvStat;
 
 import java.io.*;
 import java.net.*;
@@ -32,23 +33,29 @@ public class ClientRunnable implements Runnable {
     private final ClientChapterPacketGetStats clientChapterPacketGetStats;
     private final ClientChapterGetStats clientChapterGetStats;
     private final ClientSuperpeerQueryStats clientSuperpeerQueryStats;
+    private final ClientAllChapterRequestsStats clientAllChapterRequestsStats;
 
     public ClientRunnable(ClientServerConfig config) {
         this.config = config;
 
-        clientChapterPacketGetStats = new ClientChapterPacketGetStats();
-        clientChapterGetStats = new ClientChapterGetStats();
-        clientSuperpeerQueryStats = new ClientSuperpeerQueryStats();
+        this.clientChapterPacketGetStats = new ClientChapterPacketGetStats();
+        this.clientChapterGetStats = new ClientChapterGetStats();
+        this.clientSuperpeerQueryStats = new ClientSuperpeerQueryStats();
+        this.clientAllChapterRequestsStats = new ClientAllChapterRequestsStats();
 
         clientCsvStats = Arrays.asList(
                 clientChapterGetStats,
                 clientChapterPacketGetStats,
-                clientSuperpeerQueryStats
+                clientSuperpeerQueryStats,
+                clientAllChapterRequestsStats
         );
     }
 
     @Override
     public void run() {
+
+        long totalTimeStart = System.nanoTime();
+        boolean anyFailure = false;
 
         List<Integer> neededChapters = config.getChaptersNeeded();
 
@@ -80,8 +87,7 @@ public class ClientRunnable implements Runnable {
         }
 
         //Get the chapters now
-        for (int i = 0; i < neededChapters.size(); i++) {
-			int chapter = neededChapters.get(i);
+        for (Integer chapter : neededChapters) {
             FileOutputStream output;
 
             //Setup output file
@@ -90,6 +96,7 @@ public class ClientRunnable implements Runnable {
                 output = new FileOutputStream(outputFile);
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Error creating the output file for chapter " + chapter + ": " + e.getMessage());
+                anyFailure = true;
                 continue;
             }
 
@@ -102,6 +109,7 @@ public class ClientRunnable implements Runnable {
                 sock.send(packet);
 	        } catch (IOException e) {
 	            System.err.println("ERROR: ClientRunnable: Couldn't send request to superpeer: " + e.getMessage());
+                anyFailure = true;
                 continue;
 	        }
 
@@ -110,6 +118,7 @@ public class ClientRunnable implements Runnable {
                 sock.receive(packet);
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Couldn't receive the response from superpeer: " + e.getMessage());
+                anyFailure = true;
                 continue;
             }
             long ipQueryTimeFinish = System.nanoTime();
@@ -123,6 +132,7 @@ public class ClientRunnable implements Runnable {
             } catch (UnknownHostException e) {
                 System.err.println("ERROR: ClientRunnable: Couldn't get ip address from" +
                         " the data that was gotten from the superpeer: " + packetContents);
+                anyFailure = true;
                 continue;
             }
 
@@ -133,6 +143,7 @@ public class ClientRunnable implements Runnable {
                 serverSocket = new Socket(serverAddress, CLIENT_SERVER_PORT);
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Couldn't connect to other server: " + e.getMessage());
+                anyFailure = true;
                 continue;
             }
 
@@ -145,6 +156,7 @@ public class ClientRunnable implements Runnable {
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Couldn't create print " +
                         "writer or buffered reader for server: " + e.getMessage());
+                anyFailure = true;
                 continue;
             }
 
@@ -173,13 +185,22 @@ public class ClientRunnable implements Runnable {
                 output.flush();
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Couldn't read from server or write to file: " + e.getMessage());
+                anyFailure = true;
                 continue;
             }
             long totalChapterTimeFinish = System.nanoTime();
             clientChapterGetStats.addTotalChapterGetTime(totalChapterTimeFinish - totalChapterTimeStart);
 
             System.out.println("INFO: ClientServer successfully got chapter " + chapter);
+
+            long totalTime = System.nanoTime() - totalTimeStart;
+            if (anyFailure) {
+                System.out.println("INFO: ClientRunnable: Not saving time spent since there was an error. Total time was " + totalTime + "ns");
+            } else {
+                clientAllChapterRequestsStats.addTotalTimeForAllChapters(totalTime, neededChapters.size());
+            }
         }
+
     }
 
     public List<CsvStat> getClientCsvStats() {

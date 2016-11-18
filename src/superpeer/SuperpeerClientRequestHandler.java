@@ -1,6 +1,7 @@
 package superpeer;
 
 import config.SuperpeerConfig;
+import stats.superpeer.SuperpeerRoutingTableLookupStats;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,15 +20,19 @@ public class SuperpeerClientRequestHandler implements Runnable {
     private final DatagramPacket incomingPacket;
     private final SuperpeerConfig config;
     private final PendingRequestHolder pendingRequestHolder;
+    private final SuperpeerRoutingTableLookupStats superpeerRoutingTableLookupStats;
 
     public SuperpeerClientRequestHandler(
             DatagramPacket incomingPacket,
             SuperpeerConfig config,
-            PendingRequestHolder pendingRequestHolder) {
+            PendingRequestHolder pendingRequestHolder,
+            SuperpeerRoutingTableLookupStats superpeerRoutingTableLookupStats
+    ) {
 
         this.incomingPacket = incomingPacket;
         this.config = config;
         this.pendingRequestHolder = pendingRequestHolder;
+        this.superpeerRoutingTableLookupStats = superpeerRoutingTableLookupStats;
     }
 
     @Override
@@ -43,7 +48,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
         boolean hasIp = routingTable.containsKey(chapter);
         String clientIp = hasIp ? routingTable.get(chapter) : null;
         long routingTableLookupFinish = System.nanoTime();
-        //TODO Routing table lookup stats
+        superpeerRoutingTableLookupStats.addRoutingTableLookupTime(routingTableLookupFinish - routingTableLookupStart);
 
         //check local routing table for chapters
         if (hasIp) {

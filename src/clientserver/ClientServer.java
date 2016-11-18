@@ -1,8 +1,8 @@
 package clientserver;
 
 import config.ClientServerConfig;
-import stats.clientserver.ClientChapterPacketGetStats;
 import stats.CsvStatHelper;
+import stats.clientserver.ClientChapterPacketGetStats;
 
 import java.util.Scanner;
 import java.util.logging.Logger;

@@ -1,13 +1,11 @@
 package superpeer;
 
 import config.SuperpeerConfig;
+import stats.CsvStatHelper;
+import stats.superpeer.SuperpeerLookupRequestStats;
+import stats.superpeer.SuperpeerRoutingTableLookupStats;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -27,16 +25,23 @@ public class Superpeer {
         //Setup dependencies of the listeners
         PendingRequestHolder pendingRequestHolder = new PendingRequestHolder();
         SuperpeerConfig config = new SuperpeerConfig();
+        SuperpeerLookupRequestStats lookupRequestStats = new SuperpeerLookupRequestStats();
+        SuperpeerRoutingTableLookupStats routingTableLookupStats = new SuperpeerRoutingTableLookupStats();
 
         //Start the ClientServer listening thread
         Thread clientServerListeningThread = new Thread(
-                new SuperpeerClientServerListener(config, pendingRequestHolder)
+                new SuperpeerClientServerListener(config, pendingRequestHolder, routingTableLookupStats)
         );
         clientServerListeningThread.start();
 
         //Start the Superpeer listening thread
         Thread superpeerListeningThread = new Thread(
-                new SuperpeerToSuperpeerListener(config, pendingRequestHolder)
+                new SuperpeerToSuperpeerListener(
+                        config,
+                        pendingRequestHolder,
+                        routingTableLookupStats,
+                        lookupRequestStats
+                )
         );
         superpeerListeningThread.start();
 
@@ -48,6 +53,12 @@ public class Superpeer {
         //Stop listening threads
         clientServerListeningThread.interrupt();
         superpeerListeningThread.interrupt();
+
+        CsvStatHelper.writeAllStats(Arrays.asList(
+                lookupRequestStats,
+                routingTableLookupStats
+        ));
+
         System.exit(0);
     }
 }

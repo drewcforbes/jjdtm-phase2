@@ -1,27 +1,38 @@
 package superpeer;
 
 import config.SuperpeerConfig;
+import stats.CsvStat;
+import stats.superpeer.SuperpeerLookupRequestStats;
+import stats.superpeer.SuperpeerRoutingTableLookupStats;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 public class SuperpeerToSuperpeerListener implements Runnable {
 
     private final static int SUPERPEER_TO_SUPERPEER_PORT = 5556;
     private final static int PACKET_SIZE = 1024; //In bytes
 
-    private final Map<String, String> localRoutingTable;
+    private final SuperpeerConfig config;
     private final PendingRequestHolder pendingRequestHolder;
 
+    private final SuperpeerLookupRequestStats lookupRequestStats;
+    private final SuperpeerRoutingTableLookupStats routingTableLookupStats;
+
     public SuperpeerToSuperpeerListener(
-            SuperpeerConfig localRoutingTable,
-            PendingRequestHolder pendingRequestHolder
+            SuperpeerConfig config,
+            PendingRequestHolder pendingRequestHolder,
+            SuperpeerRoutingTableLookupStats routingTableLookupStats,
+            SuperpeerLookupRequestStats lookupRequestStats
     ) {
-        this.localRoutingTable = localRoutingTable;
+        this.config = config;
         this.pendingRequestHolder = pendingRequestHolder;
+        this.routingTableLookupStats = routingTableLookupStats;
+        this.lookupRequestStats = lookupRequestStats;
     }
 
     @Override
@@ -55,7 +66,9 @@ public class SuperpeerToSuperpeerListener implements Runnable {
                 //Handle the received packet
                 new Thread(new SuperpeerToSuperpeerRequestHandler(
                         datagramPacket,
-                        localRoutingTable,
+                        config,
+                        routingTableLookupStats,
+                        lookupRequestStats,
                         pendingRequestHolder
                 )).start();
 
@@ -66,4 +79,12 @@ public class SuperpeerToSuperpeerListener implements Runnable {
             }
         }
     }
+
+    public List<CsvStat> getAllCsvStats() {
+        return Arrays.asList(
+                lookupRequestStats,
+                routingTableLookupStats
+        );
+    }
+
 }

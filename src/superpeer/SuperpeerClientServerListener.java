@@ -1,6 +1,7 @@
 package superpeer;
 
 import config.SuperpeerConfig;
+import stats.superpeer.SuperpeerRoutingTableLookupStats;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,13 +20,16 @@ public class SuperpeerClientServerListener implements Runnable {
 
     private final SuperpeerConfig config;
     private final PendingRequestHolder pendingRequestHolder;
+    private final SuperpeerRoutingTableLookupStats superpeerRoutingTableLookupStats;
 
     public SuperpeerClientServerListener(
             SuperpeerConfig config,
-            PendingRequestHolder pendingRequestHolder
+            PendingRequestHolder pendingRequestHolder,
+            SuperpeerRoutingTableLookupStats superpeerRoutingTableLookupStats
     ) {
         this.config = config;
         this.pendingRequestHolder = pendingRequestHolder;
+        this.superpeerRoutingTableLookupStats = superpeerRoutingTableLookupStats;
     }
 
     @Override
@@ -60,7 +64,8 @@ public class SuperpeerClientServerListener implements Runnable {
                 new Thread(new SuperpeerClientRequestHandler(
                         datagramPacket,
                         config,
-                        pendingRequestHolder
+                        pendingRequestHolder,
+                        superpeerRoutingTableLookupStats
                 )).start();
 
             } catch (IOException e) {

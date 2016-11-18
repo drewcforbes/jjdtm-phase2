@@ -35,7 +35,6 @@ public class PendingRequestHolder {
             pendingRequests.get(chapterName).add(new Pair<>(ipAddress, System.nanoTime()));
         }
     }
-    
 
     /**
      * Gets all the ip addresses of clients that are waiting for
