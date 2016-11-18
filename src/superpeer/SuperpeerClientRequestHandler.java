@@ -58,8 +58,6 @@ public class SuperpeerClientRequestHandler implements Runnable {
         long routingTableLookupStart = System.nanoTime();
         boolean hasIp = routingTable.containsKey(chapter);
         String clientIp = hasIp ? routingTable.get(chapter) : null;
-        long routingTableLookupFinish = System.nanoTime();
-        superpeerRoutingTableLookupStats.addRoutingTableLookupTime(routingTableLookupFinish - routingTableLookupStart);
 
         //check local routing table for chapters
         if (hasIp) {
@@ -70,6 +68,8 @@ public class SuperpeerClientRequestHandler implements Runnable {
                 DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, InetAddress.getByName(contents[0]), SUPERPEER_CLIENT_SERVER_PORT);
                 sock.send(pack);
                 sock.close();
+                long routingTableLookupFinish = System.nanoTime();
+                superpeerRoutingTableLookupStats.addRoutingTableLookupTime(routingTableLookupFinish - routingTableLookupStart);
             }
             catch (IOException e) {
                 System.err.println("ERROR: SuperpeerClientRequestHandler: " + e.getMessage());

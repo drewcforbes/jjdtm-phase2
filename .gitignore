@@ -1,6 +1,6 @@
 # Created by https://www.gitignore.io/api/intellij,java,netbeans,eclipse
 
-**/stats
+stats/
 **/downloaded
 
 ### Intellij ###
