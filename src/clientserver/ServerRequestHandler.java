@@ -1,5 +1,9 @@
 package clientserver;
 
+import config.ClientServerConfig;
+import stats.clientserver.ServerPacketStats;
+import stats.clientserver.ServerRequestStats;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -9,13 +13,26 @@ import java.net.Socket;
 public class ServerRequestHandler implements Runnable {
 
     private final Socket clientRequestSocket;
+    private final ClientServerConfig config;
+    private final ServerPacketStats serverPacketStats;
+    private final ServerRequestStats serverRequestStats;
 
-    public ServerRequestHandler(Socket clientRequestSocket) {
+    public ServerRequestHandler(
+            Socket clientRequestSocket,
+            ClientServerConfig config,
+            ServerPacketStats serverPacketStats,
+            ServerRequestStats serverRequestStats
+    ) {
         this.clientRequestSocket = clientRequestSocket;
+        this.config = config;
+        this.serverPacketStats = serverPacketStats;
+        this.serverRequestStats = serverRequestStats;
     }
 
     @Override
     public void run() {
+        long totalTimeStart = System.nanoTime();
+
         OutputStream out;
         BufferedReader in;// reader (for reading from the machine connected to)
     	try {
@@ -36,7 +53,7 @@ public class ServerRequestHandler implements Runnable {
             System.out.println("Connected to the client seeking chapter" + chapterRequested); // confirmation of connection
 
             //read the chapter from the file system,
-            File file = new File("C:\\Users\\JamesLaptop\\Desktop\\ServerTest\\Chapter_2.txt");
+            File file = new File(String.format(config.getFileSubstitutionFormat(), Integer.parseInt(chapterRequested)));
             FileInputStream fis = new FileInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(fis);
 
@@ -46,12 +63,12 @@ public class ServerRequestHandler implements Runnable {
             long current = 0;
 
             long start = System.nanoTime();
-            while(current!=fileLength){
+            while(current!=fileLength) {
                 int size = 10000;
                 if(fileLength - current >= size) {
                     current += size;
                 } else {
-                    size = (int)(fileLength - current);
+                    size = (int) (fileLength - current);
                     current = fileLength;
                 }
                 contents = new byte[size];
@@ -66,9 +83,12 @@ public class ServerRequestHandler implements Runnable {
             clientRequestSocket.close();   //JP Watch this for possible bug
             System.out.println("File sent succesfully!");
 
-       } catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Could not listen to socket.");
-       }
+        }
+
+        long totalTimeFinish = System.nanoTime();
+        serverRequestStats.addTotalRequestTimes(totalTimeFinish - totalTimeStart);
     }
 }
 

@@ -2,7 +2,8 @@ package clientserver;
 
 import config.ClientServerConfig;
 import stats.CsvStatHelper;
-import stats.clientserver.ClientChapterPacketGetStats;
+import stats.clientserver.ServerPacketStats;
+import stats.clientserver.ServerRequestStats;
 
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -22,7 +23,8 @@ public class ClientServer {
         Scanner scanner = new Scanner(System.in);
 
         ClientServerConfig config = new ClientServerConfig();
-        ClientChapterPacketGetStats stats = new ClientChapterPacketGetStats();
+        ServerPacketStats serverPacketStats = new ServerPacketStats();
+        ServerRequestStats serverRequestStats = new ServerRequestStats();
 
         //Start the client thread
         ClientRunnable clientRunnable = new ClientRunnable(config);
@@ -30,7 +32,7 @@ public class ClientServer {
         clientThread.start();
 
         //Start the server thread to listen for incoming requests from clients
-        Thread serverThread = new Thread(new ServerListener(stats));
+        Thread serverThread = new Thread(new ServerListener(config, serverPacketStats, serverRequestStats));
         serverThread.start();
 
         //Block for a stop command

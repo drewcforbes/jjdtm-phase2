@@ -1,6 +1,8 @@
 package clientserver;
 
-import stats.clientserver.ClientChapterPacketGetStats;
+import config.ClientServerConfig;
+import stats.clientserver.ServerPacketStats;
+import stats.clientserver.ServerRequestStats;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,10 +17,18 @@ public class ServerListener implements Runnable {
 
     private static final int SERVER_LISTENER_PORT = 5554;
 
-    private ClientChapterPacketGetStats stats;
+    private ClientServerConfig config;
+    private final ServerPacketStats serverPacketStats;
+    private final ServerRequestStats serverRequestStats;
 
-    public ServerListener(ClientChapterPacketGetStats stats) {
-        this.stats = stats;
+    public ServerListener(
+            ClientServerConfig config,
+            ServerPacketStats serverPacketStats,
+            ServerRequestStats serverRequestStats
+    ) {
+        this.config = config;
+        this.serverPacketStats = serverPacketStats;
+        this.serverRequestStats = serverRequestStats;
     }
 
     @Override
@@ -48,7 +58,12 @@ public class ServerListener implements Runnable {
             }
 
             //Start a handler thread for the request
-            new Thread(new ServerRequestHandler(clientRequestSocket, stats)).start();
+            new Thread(new ServerRequestHandler(
+                    clientRequestSocket,
+                    config,
+                    serverPacketStats,
+                    serverRequestStats
+            )).start();
         }
     }
 }

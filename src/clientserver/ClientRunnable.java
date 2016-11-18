@@ -4,7 +4,6 @@ import config.ClientServerConfig;
 import stats.CsvStat;
 import stats.clientserver.ClientAllChapterRequestsStats;
 import stats.clientserver.ClientChapterGetStats;
-import stats.clientserver.ClientChapterPacketGetStats;
 import stats.clientserver.ClientSuperpeerQueryStats;
 
 import java.io.*;

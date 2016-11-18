@@ -11,6 +11,7 @@ public class ClientServerConfig {
 
     private List<Integer> chaptersNeeded;
     private InetAddress superpeerAddress;
+    private String fileSubstitutionFormat;
 
     public ClientServerConfig() {
         Properties properties = new Properties();
@@ -36,6 +37,9 @@ public class ClientServerConfig {
         } catch (UnknownHostException e) {
             System.err.println("ClientServerConfig: Couldn't parse superpeer ip address: " + superpeerIp);
         }
+
+        //Get the file substitution format
+        fileSubstitutionFormat = properties.getProperty("fileSubstitutionFormat");
     }
 
     public List<Integer> getChaptersNeeded() {
@@ -46,4 +50,7 @@ public class ClientServerConfig {
         return superpeerAddress;
     }
 
+    public String getFileSubstitutionFormat() {
+        return fileSubstitutionFormat;
+    }
 }
