@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,12 +25,15 @@ public class ClientServerConfig {
         }
 
         //Parse the chapters needed range
-        String chapterRange = properties.getProperty("chaptersNeeded");
-        String[] bounds = chapterRange.split("-");
-        chaptersNeeded = RangeUtil.makeRangeList(
-                Integer.parseInt(bounds[0]),
-                Integer.parseInt(bounds[1])
-        );
+        String chaptersNeededProperty = properties.getProperty("chaptersNeeded");
+        chaptersNeeded = new ArrayList<>();
+        for (String range : chaptersNeededProperty.split(",")) {
+            String[] bounds = range.split("-");
+            chaptersNeeded.addAll(RangeUtil.makeRangeList(
+                    Integer.parseInt(bounds[0]),
+                    Integer.parseInt(bounds[1])
+            ));
+        }
 
         //Parse the superpeer ip address
         String superpeerIp = properties.getProperty("superpeerIp");
