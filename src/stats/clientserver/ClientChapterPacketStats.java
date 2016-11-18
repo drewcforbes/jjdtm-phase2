@@ -26,7 +26,7 @@ public class ClientChapterPacketStats implements CsvStat {
 
     @Override
     public String getFileName() {
-        return "clientChapterPacketGet.txt";
+        return "clientChapterPacketGet.csv";
     }
 
     @Override

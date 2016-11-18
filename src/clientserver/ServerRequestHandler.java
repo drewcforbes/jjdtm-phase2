@@ -33,16 +33,21 @@ public class ServerRequestHandler implements Runnable {
     public void run() {
         long totalTimeStart = System.nanoTime();
 
+        System.out.println("Got server request");
+
         OutputStream out;
         BufferedReader in;// reader (for reading from the machine connected to)
     	try {
             //(A) Receive a TCP connection
-    	   out = clientRequestSocket.getOutputStream();
-   		   in = new BufferedReader(new InputStreamReader(clientRequestSocket.getInputStream()));
+    	    out = clientRequestSocket.getOutputStream();
+            System.out.println("Got output stream");
+            in = new BufferedReader(new InputStreamReader(clientRequestSocket.getInputStream()));
    		} catch (IOException e) {
             System.err.println("FATAL: ServerRequestHandler: Client failed to connect: " + e.getMessage());
             return;
         }
+
+        System.out.println("made streams");
 
     	// Initial sends/receives
     	try {
@@ -65,9 +70,9 @@ public class ServerRequestHandler implements Runnable {
             long totalRequestTime = 0;
             long totalReadTime = 0;
 
-            long start = System.nanoTime();
             while (current != fileLength) {
                 int size = 10000;
+                System.out.println("Current size: " + current + " File size: " + fileLength);
                 if(fileLength - current >= size) {
                     current += size;
                 } else {

@@ -39,16 +39,16 @@ public class SuperpeerClientRequestHandler implements Runnable {
     @Override
     public void run() {
         //Get the client address and message
-        String packetData = new String(incomingPacket.getData()).trim();
+        String packetData = new String(incomingPacket.getData());
         String[] contents = packetData.split(" ");
-        InetAddress clientAddr = null;
+        InetAddress clientAddr;
         try {
             clientAddr = InetAddress.getByName(contents[0]);
         } catch (UnknownHostException e) {
             System.err.println("FATAL: SuperpeerClientRequestHandler: Couldn't get client return address: " + e.getMessage());
             return;
         }
-        Integer chapter = Integer.getInteger(contents[1]);
+        Integer chapter = Integer.parseInt(contents[1].trim());
 
         System.out.println(config.getMyIp());
 
@@ -67,7 +67,6 @@ public class SuperpeerClientRequestHandler implements Runnable {
                 byte[] bufferAry = clientIp.getBytes();
                 DatagramSocket sock = new DatagramSocket();
                 DatagramPacket pack = new DatagramPacket(bufferAry, bufferAry.length, InetAddress.getByName(contents[0]), SUPERPEER_CLIENT_SERVER_PORT);
-                System.out.println("Sent " + new String(pack.getData()) + " to client");
                 sock.send(pack);
                 sock.close();
             }
@@ -79,7 +78,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
             pendingRequestHolder.addPendingRequest(packetData, clientAddr.getHostAddress());
             try {
                 //send chapter other superpeer
-                byte[] bufferAry2 = (config.getMyIp() + " " + packetData).getBytes();
+                byte[] bufferAry2 = (config.getMyIp() + " " + chapter).getBytes();
                 DatagramSocket sock = new DatagramSocket();
                 DatagramPacket pack;
 
