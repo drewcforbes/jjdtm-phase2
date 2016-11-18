@@ -79,8 +79,11 @@ public class ClientRunnable implements Runnable {
         try {
             Path downloadedDirectoryPath = Paths.get(downloadedDirectory);
 
-            for (File file : downloadedDirectoryPath.toFile().listFiles()) {
-                file.delete();
+            File downloadedDirectoryFile = downloadedDirectoryPath.toFile();
+            if (downloadedDirectoryFile.exists()) {
+                for (File file : downloadedDirectoryFile.listFiles()) {
+                    file.delete();
+                }
             }
             Files.deleteIfExists(downloadedDirectoryPath);
             Files.createDirectory(downloadedDirectoryPath);
