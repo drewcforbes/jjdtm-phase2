@@ -75,7 +75,7 @@ public class ClientRunnable implements Runnable {
         }
 
         //Clear and recreate the downloaded directory
-        String downloadedDirectory = "downloaded";
+        String downloadedDirectory = "../downloaded";
         try {
             Path downloadedDirectoryPath = Paths.get(downloadedDirectory);
 
