@@ -75,7 +75,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
             }
         } else {
             // Add the pending request to the Map
-            pendingRequestHolder.addPendingRequest(packetData, clientAddr.getHostAddress());
+            pendingRequestHolder.addPendingRequest(chapter.toString(), clientAddr.getHostAddress());
             try {
                 //send chapter other superpeer
                 byte[] bufferAry2 = (config.getMyIp() + " " + chapter).getBytes();
