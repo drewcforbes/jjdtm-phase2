@@ -39,7 +39,7 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 	@Override
 	public void run() {
 		String[] content = new String(incomingPacket.getData()).trim().split(" ");
-        int chapter = Integer.parseInt(content[0]);
+        int chapter = Integer.parseInt(content[1]);
 		Map<Integer, String> routingTable = config.getClientChapterLookupTable();
 
 		//See if this superpeer has the ip address the client is looking for
@@ -50,16 +50,14 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 		routingTableLookupStats.addRoutingTableLookupTime(routingTableLookupFinish - routingTableLookupStart);
 
 		// if DatagramPacket only contains chapter number
-		if (content.length == 1) {
+		if (content.length == 2) {
 			if (hasIp) {
 				try {
-					String message = content[0] + " " + clientIp;
+					String message = chapter + " " + clientIp;
 					byte[] bufferArr = message.getBytes();
 					DatagramSocket sock = new DatagramSocket();
-                    System.out.println("Sending back to " + incomingPacket.getAddress());
-                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, incomingPacket.getAddress(),
+                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, InetAddress.getByName(content[0]),
 							5556);
-                    pack.setAddress(InetAddress.getByName(config.getMyIp()));
 					sock.send(pack);
 					sock.close();
 				} catch (IOException e) {
@@ -69,17 +67,16 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 
 			// DatagramPacket contains chapter number and IpAddress of client
 			// with chapter
-		} else if (content.length == 2) {
+		} else if (content.length == 3) {
 			try {
 				List<Pair<String, Long>> clients = pendingRequestHolder.getPendingRequestsForChapter(content[0]);
-				byte[] bufferArr = content[1].getBytes();
+				byte[] bufferArr = content[2].getBytes();
 				DatagramSocket sock = new DatagramSocket();
 				for (Pair<String, Long> client : clients) {
 
 					// create the message and send it to the client
 					InetAddress clientAdr = InetAddress.getByName(client.getFirst());
 					DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, clientAdr, 5555);
-                    pack.setAddress(InetAddress.getByName(config.getMyIp()));
 					sock.send(pack);
 
 					//Record how long the entire transaction took
