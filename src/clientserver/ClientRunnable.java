@@ -105,10 +105,11 @@ public class ClientRunnable implements Runnable {
 
             long ipQueryTimeStart = System.nanoTime();
             //Send request to superpeer for the other ClientServer's ip corresponding to the chapter we need
-            byte[] buffer = new byte[1024];
+            byte[] buffer = chapter.toString().getBytes();
             DatagramPacket packet;
 			try {
                 packet = new DatagramPacket(buffer, buffer.length, config.getSuperpeerAddress(), CLIENT_AND_SUPERNODE_PORT);
+                packet.setAddress(InetAddress.getByName(config.getMyIp()));
                 sock.send(packet);
 	        } catch (IOException e) {
 	            System.err.println("ERROR: ClientRunnable: Couldn't send request to superpeer: " + e.getMessage());
@@ -128,7 +129,7 @@ public class ClientRunnable implements Runnable {
             clientSuperpeerQueryStats.addSuperpeerIpQueryTime(ipQueryTimeFinish - ipQueryTimeStart);
 
             //Get the address of the server from the packet
-            String packetContents = new String(packet.getData());
+            String packetContents = new String(packet.getData()).trim();
             InetAddress serverAddress;
             try {
                 serverAddress = InetAddress.getByName(packetContents);

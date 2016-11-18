@@ -38,8 +38,8 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 
 	@Override
 	public void run() {
-		String[] content = new String(incomingPacket.getData()).split(" ");
-		int chapter = Integer.parseInt(content[0]);
+		String[] content = new String(incomingPacket.getData()).trim().split(" ");
+        int chapter = Integer.parseInt(content[0]);
 		Map<Integer, String> routingTable = config.getClientChapterLookupTable();
 
 		//See if this superpeer has the ip address the client is looking for
@@ -56,8 +56,10 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 					String message = content[0] + " " + clientIp;
 					byte[] bufferArr = message.getBytes();
 					DatagramSocket sock = new DatagramSocket();
-					DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, incomingPacket.getAddress(),
+                    System.out.println("Sending back to " + incomingPacket.getAddress());
+                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, incomingPacket.getAddress(),
 							5556);
+                    pack.setAddress(InetAddress.getByName(config.getMyIp()));
 					sock.send(pack);
 					sock.close();
 				} catch (IOException e) {
@@ -65,7 +67,7 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 				}
 			}
 
-			// if DatagramPacket contains chapter number and IpAddress of client
+			// DatagramPacket contains chapter number and IpAddress of client
 			// with chapter
 		} else if (content.length == 2) {
 			try {
@@ -77,6 +79,7 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 					// create the message and send it to the client
 					InetAddress clientAdr = InetAddress.getByName(client.getFirst());
 					DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, clientAdr, 5555);
+                    pack.setAddress(InetAddress.getByName(config.getMyIp()));
 					sock.send(pack);
 
 					//Record how long the entire transaction took
@@ -87,7 +90,7 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 				System.err.println("ERROR: SuperpeerToSuperpeerRequestHandler: While sending IP back to client: " + e.getMessage());
 			}
 		} else {
-			throw new RuntimeException("Malformed request: " + new String(incomingPacket.getData()));
+			throw new RuntimeException("Malformed request: " + new String(incomingPacket.getData()).trim());
 		}
 	}
 }

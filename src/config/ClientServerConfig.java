@@ -12,6 +12,7 @@ public class ClientServerConfig {
     private List<Integer> chaptersNeeded;
     private InetAddress superpeerAddress;
     private String fileSubstitutionFormat;
+    private String myIp;
 
     public ClientServerConfig() {
         Properties properties = new Properties();
@@ -40,6 +41,9 @@ public class ClientServerConfig {
 
         //Get the file substitution format
         fileSubstitutionFormat = properties.getProperty("fileSubstitutionFormat");
+
+        //Get my ip address
+        myIp = properties.getProperty("ipAddress");
     }
 
     public List<Integer> getChaptersNeeded() {
@@ -52,5 +56,9 @@ public class ClientServerConfig {
 
     public String getFileSubstitutionFormat() {
         return fileSubstitutionFormat;
+    }
+
+    public String getMyIp() {
+        return myIp;
     }
 }

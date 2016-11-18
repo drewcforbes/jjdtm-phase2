@@ -8,6 +8,7 @@ public class SuperpeerConfig {
 
     private Map<Integer, String> clientChapterLookupTable;
     private List<String> otherSuperpeerIps;
+    private String myIp;
 
     public SuperpeerConfig() {
         Properties properties = new Properties();
@@ -27,7 +28,6 @@ public class SuperpeerConfig {
             System.err.println("FATAL: SuperpeerConfig: Unequal number of client ips and chapters");
             return;
         }
-
 
         clientChapterLookupTable = new HashMap<>();
         for (int i = 0; i < clientIps.length; i++) {
@@ -50,6 +50,9 @@ public class SuperpeerConfig {
         //Load the other superpeer ids
         String unparsedSuperpeerIps = properties.getProperty("otherSuperpeerIps");
         otherSuperpeerIps = Arrays.asList(unparsedSuperpeerIps.split(","));
+
+        //Get my ip address
+        myIp = properties.getProperty("ipAddress");
     }
 
     public Map<Integer, String> getClientChapterLookupTable() {
@@ -58,5 +61,9 @@ public class SuperpeerConfig {
 
     public List<String> getOtherSuperpeerIps() {
         return otherSuperpeerIps;
+    }
+
+    public String getMyIp() {
+        return myIp;
     }
 }
