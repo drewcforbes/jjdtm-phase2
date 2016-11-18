@@ -29,15 +29,29 @@ public class ClientServer {
         //Start the client thread
         ClientRunnable clientRunnable = new ClientRunnable(config);
         Thread clientThread = new Thread(clientRunnable);
-        clientThread.start();
 
         //Start the server thread to listen for incoming requests from clients
         Thread serverThread = new Thread(new ServerListener(config, serverPacketStats, serverRequestStats));
         serverThread.start();
 
         //Block for a stop command
-        LOGGER.info("Enter 'exit' to stop background processes");
-        while (!scanner.nextLine().toLowerCase().equals("exit")) {}
+        LOGGER.info("Enter 'start' to start the client or 'exit' to stop background processes");
+        while (true) {
+            String input = scanner.nextLine().toLowerCase();
+
+            if (input.equals("start")) {
+                if (clientThread.isAlive()) {
+                    System.out.println("Client already running");
+                } else {
+                    System.out.println("Starting ClientRunnable");
+                    clientThread.start();
+                }
+            } else if (input.equals("exit")) {
+                break;
+            } else {
+                System.out.println("Command not recognized. Please enter 'start' or 'exit'");
+            }
+        }
 
         //Stop the background threads (if they're still running)
         if (clientThread.isAlive()) {

@@ -14,7 +14,7 @@ public class CsvStatHelper {
 
     public static void writeStat(CsvStat stat) {
 
-        String statsDirectory = "stats";
+        String statsDirectory = "../stats";
         Path statsDirectoryPath = Paths.get(statsDirectory);
 
         String statFileString = statsDirectory + '/' + stat.getFileName();
@@ -39,7 +39,7 @@ public class CsvStatHelper {
                 }
                 writer = new PrintWriter(statFile);
                 writer.println(joiner.toString());
-
+                writer.flush();
             }
         } catch (IOException e) {
             System.err.println("FATAL: CsvStatHelper: Couldn't create stats directory or file: " + e.getMessage());
@@ -74,6 +74,7 @@ public class CsvStatHelper {
 
             //Write the line to the file
             writer.println(joiner.toString());
+            writer.flush();
         }
     }
 
