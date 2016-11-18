@@ -40,6 +40,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
     public void run() {
         //Get the client address and message
         String packetData = new String(incomingPacket.getData());
+        System.out.println("Got client packet: " + packetData);
         String[] contents = packetData.split(" ");
         InetAddress clientAddr;
         try {
