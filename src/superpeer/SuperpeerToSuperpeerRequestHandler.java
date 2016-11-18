@@ -39,7 +39,8 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 	@Override
 	public void run() {
 		String[] content = new String(incomingPacket.getData()).trim().split(" ");
-        int chapter = Integer.parseInt(content[1]);
+		System.out.println("Got packet from Superpeer: " + new String(incomingPacket.getData()));
+		int chapter = Integer.parseInt(content[0]);
 		Map<Integer, String> routingTable = config.getClientChapterLookupTable();
 
 		//See if this superpeer has the ip address the client is looking for
@@ -53,10 +54,10 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 		if (content.length == 2) {
 			if (hasIp) {
 				try {
-					String message = chapter + " " + clientIp;
+					String message = chapter + " " + clientIp + " r";
 					byte[] bufferArr = message.getBytes();
 					DatagramSocket sock = new DatagramSocket();
-                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, InetAddress.getByName(content[0]),
+                    DatagramPacket pack = new DatagramPacket(bufferArr, bufferArr.length, InetAddress.getByName(content[1]),
 							5556);
 					sock.send(pack);
 					sock.close();
@@ -70,7 +71,7 @@ public class SuperpeerToSuperpeerRequestHandler implements Runnable {
 		} else if (content.length == 3) {
 			try {
 				List<Pair<String, Long>> clients = pendingRequestHolder.getPendingRequestsForChapter(content[0]);
-				byte[] bufferArr = content[2].getBytes();
+				byte[] bufferArr = content[1].getBytes();
 				DatagramSocket sock = new DatagramSocket();
 				for (Pair<String, Long> client : clients) {
 

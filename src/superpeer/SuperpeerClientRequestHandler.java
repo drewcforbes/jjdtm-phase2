@@ -40,6 +40,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
     public void run() {
         //Get the client address and message
         String packetData = new String(incomingPacket.getData());
+        System.out.println("Got client packet: " + packetData);
         String[] contents = packetData.split(" ");
         InetAddress clientAddr;
         try {
@@ -78,7 +79,7 @@ public class SuperpeerClientRequestHandler implements Runnable {
             pendingRequestHolder.addPendingRequest(chapter.toString(), clientAddr.getHostAddress());
             try {
                 //send chapter other superpeer
-                byte[] bufferAry2 = (config.getMyIp() + " " + chapter).getBytes();
+                byte[] bufferAry2 = (chapter + " " + config.getMyIp()).getBytes();
                 DatagramSocket sock = new DatagramSocket();
                 DatagramPacket pack;
 
