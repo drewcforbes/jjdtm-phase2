@@ -1,0 +1,15 @@
+graph Communication {
+    label="High Level Communication (Simplified)"
+    labelloc=t
+    rankdir=LR
+
+    clientServer [label="Client/Server", shape=box]
+    superpeer [label="Superpeer", shape=box]
+
+    clientServer -> superpeer [label="Port 5555"]
+    superpeer -> clientServer [label="Port 5555"]
+    
+    clientServer -> clientServer [label="Port 5554"]
+    superpeer -> superpeer [label="Port 5556"]
+}
+

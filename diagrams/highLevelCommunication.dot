@@ -1,0 +1,29 @@
+digraph Communication {
+    label="High Level Communication"
+    labelloc=t
+    rankdir=LR
+
+    subgraph cluster_superpeer1 {
+        label=""
+        cs1 [label="Client/Server 1"]
+        sp1 [label="Superpeer 1"]
+    }
+
+    subgraph cluster_superpeer2 {
+        label=""
+        cs2 [label="Client/Server 2"]
+        sp2 [label="Superpeer 1"]
+    }
+
+    cs1 -> sp1 [label="Port 5555", minlen=3]
+    sp1 -> cs1 [label="Port 5555"]
+    cs2 -> sp2 [label="Port 5555"]
+    sp2 -> cs2 [label="Port 5555"]
+
+    sp1 -> sp2 [label="Port 5556"]
+    sp2 -> sp1 [label="Port 5556"]
+
+    cs1 -> cs2 [label="Port 5554"]
+    cs2 -> cs1 [label="Port 5554"]
+}
+

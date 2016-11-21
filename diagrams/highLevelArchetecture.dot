@@ -1,0 +1,33 @@
+graph Archetecture {
+    label="High Level Archetecture"
+    labelloc=t
+
+        subgraph cluster_ClientServer {
+            label="Client/Server"
+            
+            cs [label="ClientServer"]
+            serverListener [label="ServerListener"]
+            serverReqHandler [label="ServerRequestHandler"]
+            clientRunnable [label="ClientRunnable"]
+
+            cs -- serverListener
+            cs -- clientRunnable
+            serverListener -- serverReqHandler
+        }
+
+        subgraph cluster_Superpeer {
+            label="Superpeer"
+            
+            superpeer [label="Superpeer"]
+            sp2spListener [label="SuperpeerToSuperpeerListener"]
+            cs2spListener [label="ClientServerToSuperpeerListener"]
+            sp2spHandler [label="SuperpeerToSuperpeerHandler"]
+            cs2spHandler [label="ClientServerToSuperpeerHandler"]
+
+            superpeer -- sp2spListener
+            superpeer -- cs2spListener
+            sp2spListener -- sp2spHandler
+            cs2spListener -- cs2spHandler
+        }
+}
+
