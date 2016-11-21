@@ -1,4 +1,4 @@
-graph Communication {
+digraph Communication {
     label="High Level Communication (Simplified)"
     labelloc=t
     rankdir=LR

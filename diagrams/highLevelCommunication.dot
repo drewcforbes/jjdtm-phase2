@@ -12,7 +12,7 @@ digraph Communication {
     subgraph cluster_superpeer2 {
         label=""
         cs2 [label="Client/Server 2"]
-        sp2 [label="Superpeer 1"]
+        sp2 [label="Superpeer 2"]
     }
 
     cs1 -> sp1 [label="Port 5555", minlen=3]
