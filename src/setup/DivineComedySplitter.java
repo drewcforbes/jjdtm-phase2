@@ -17,9 +17,6 @@ public class DivineComedySplitter {
         Creates a set of 100 chapters. It builds the files in the src directory instead of in /chapters. We'll move the files manually and keep this bug for now.
          */
         divineComedySplitter.createFiles();
-        /*
-        TODO: Move the files from src to chapters programatically.
-         */
     }
     /**
      * Create the individual files for the ClientServer nodes.
