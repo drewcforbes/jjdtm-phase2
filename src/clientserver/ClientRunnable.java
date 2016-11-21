@@ -61,7 +61,7 @@ public class ClientRunnable implements Runnable {
 
         //Print the list of files to download to the console
         StringBuilder stringBuilder = new StringBuilder();
-        for(Integer entry: neededChapters) {
+        for (Integer entry : neededChapters) {
             stringBuilder.append(entry).append(", ");
         }
         LOGGER.info("ClientServer: Will download chapters " + stringBuilder.toString());
@@ -110,16 +110,16 @@ public class ClientRunnable implements Runnable {
             //Send request to superpeer for the other ClientServer's ip corresponding to the chapter we need
             byte[] buffer = (config.getMyIp() + " " + chapter).getBytes();
             DatagramPacket packet;
-			try {
+            try {
                 packet = new DatagramPacket(buffer, buffer.length, config.getSuperpeerAddress(), CLIENT_AND_SUPERNODE_PORT);
                 sock.send(packet);
-	        } catch (IOException e) {
-	            System.err.println("ERROR: ClientRunnable: Couldn't send request to superpeer: " + e.getMessage());
+            } catch (IOException e) {
+                System.err.println("ERROR: ClientRunnable: Couldn't send request to superpeer: " + e.getMessage());
                 anyFailure = true;
                 continue;
-	        }
+            }
 
-	        //Get response from superpeer
+            //Get response from superpeer
             try {
                 packet = new DatagramPacket(new byte[1024], 1024);
                 sock.receive(packet);
@@ -205,12 +205,12 @@ public class ClientRunnable implements Runnable {
 
             System.out.println("INFO: ClientServer successfully got chapter " + chapter);
 
-            long totalTime = System.nanoTime() - totalTimeStart;
-            if (anyFailure) {
-                System.out.println("INFO: ClientRunnable: Not saving time spent since there was an error. Total time was " + totalTime + "ns");
-            } else {
-                clientAllChapterRequestsStats.addTotalTimeForAllChapters(totalTime, neededChapters.size());
-            }
+        }
+        long totalTime = System.nanoTime() - totalTimeStart;
+        if (anyFailure) {
+            System.out.println("INFO: ClientRunnable: Not saving time spent since there was an error. Total time was " + totalTime + "ns");
+        } else {
+            clientAllChapterRequestsStats.addTotalTimeForAllChapters(totalTime, neededChapters.size());
         }
 
     }
