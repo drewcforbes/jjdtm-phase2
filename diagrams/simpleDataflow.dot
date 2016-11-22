@@ -1,0 +1,22 @@
+digraph SimpleDataflow {
+    rankdir=LR
+    size="15,5"
+    labelloc=t
+    label="Data flow via Requests (If Client wants file 12)"
+    fontsize=55.0
+    edge [minlen=4, fontsize=40.0,penwidth=5, arrowsize=2.25]
+    node [fontsize=40.0, penwidth=5]
+
+    cr [label="ClientRunnable (ClientServer), IP=2.2.2.2", shape=box]
+    sp1 [label="Super Peer 1, IP=3.3.3.3", shape=box]
+    sp2 [label="Super Peer 2, IP=4.4.4.4", shape=box]
+    server[label="ServerListener/Handler (ClientServer), IP=5.5.5.5", shape=box]
+
+    cr -> sp1 [label="\"12\""]
+    sp1 -> sp2 [label="\"12 3.3.3.3\""]
+    sp2 -> sp1 [label="\"12 5.5.5.5 r\""]
+    sp1 -> cr [label="\"5.5.5.5\""]
+    cr -> server [label="\"12\""]
+    server -> cr [label="{file 12's contents}"]
+}
+

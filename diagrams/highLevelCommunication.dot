@@ -1,6 +1,7 @@
 digraph Communication {
     label="High Level Communication"
     labelloc=t
+    fontsize=20.0
     rankdir=LR
 
     subgraph cluster_superpeer1 {

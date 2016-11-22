@@ -1,6 +1,7 @@
 graph Archetecture {
     label="High Level Archetecture"
     labelloc=t
+    fontsize=25.0
 
         subgraph cluster_ClientServer {
             label="Client/Server"
