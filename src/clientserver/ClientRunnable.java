@@ -69,6 +69,7 @@ public class ClientRunnable implements Runnable {
         DatagramSocket sock;
         try {
             sock = new DatagramSocket(CLIENT_AND_SUPERNODE_PORT);
+            sock.setSoTimeout(3000);
         } catch (SocketException e) {
             System.err.println("FATAL: ClientRunnable: Couldn't open datagram socket: " + e.getMessage());
             return;
@@ -93,8 +94,17 @@ public class ClientRunnable implements Runnable {
         }
 
         //Get the chapters now
-        for (Integer chapter : neededChapters) {
-            FileOutputStream output;
+        int chapterIndex = neededChapters.size() - 1;
+        int chapter;
+        int numberOfRequests = 0;
+        FileOutputStream output;
+
+        while (!neededChapters.isEmpty()) {
+            if (chapterIndex > neededChapters.size()) {
+                chapterIndex = neededChapters.size() - 1;
+            }
+            chapter = neededChapters.get(chapterIndex);
+            numberOfRequests++;
 
             //Setup output file
             try {
@@ -204,13 +214,15 @@ public class ClientRunnable implements Runnable {
             clientChapterGetStats.addTotalChapterSize(totalSize);
 
             System.out.println("INFO: ClientServer successfully downloaded file " + chapter);
-
+            neededChapters.remove(chapter);
         }
+
+        System.out.println("INFO: Successfully downloaded all files");
         long totalTime = System.nanoTime() - totalTimeStart;
         if (anyFailure) {
             System.out.println("INFO: ClientRunnable: Not saving time spent since there was an error. Total time was " + totalTime + "ns");
         } else {
-            clientAllChapterRequestsStats.addTotalTimeForAllChapters(totalTime, neededChapters.size());
+            clientAllChapterRequestsStats.addTotalTimeForAllChapters(totalTime, numberOfRequests);
         }
 
     }

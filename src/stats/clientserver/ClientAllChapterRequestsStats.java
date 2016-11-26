@@ -10,7 +10,7 @@ public class ClientAllChapterRequestsStats implements CsvStat {
 
     private final List<String> keys = Arrays.asList(
             "Total time to get all chapters (ns)",
-            "Total number of chapters"
+            "Total number of requests"
     );
 
     private final List<Long> totalTimesForAllChapters = new ArrayList<>();
