@@ -108,13 +108,15 @@ public class ClientRunnable implements Runnable {
                     break;
                 }
             }
-            
+
             chapter = neededChapters.get(chapterIndex);
             numberOfRequests++;
 
             //Setup output file
             try {
-                File outputFile = Files.createFile(Paths.get(downloadedDirectory + '/' + chapter)).toFile();
+                Path filePath = Paths.get(downloadedDirectory + '/' + chapter);
+                Files.deleteIfExists(filePath);
+                File outputFile = Files.createFile(filePath).toFile();
                 output = new FileOutputStream(outputFile);
             } catch (IOException e) {
                 System.err.println("ERROR: ClientRunnable: Error creating the output file for chapter " + chapter + ": " + e.getMessage());
