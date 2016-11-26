@@ -105,6 +105,10 @@ public class ClientRunnable implements Runnable {
             if (chapterIndex >= neededChapters.size()) {
                 chapterIndex = neededChapters.size() - 1;
             }
+            
+            if (chapterIndex < 0) {
+                break;
+            }
             chapter = neededChapters.get(chapterIndex);
             numberOfRequests++;
 
