@@ -94,13 +94,15 @@ public class ClientRunnable implements Runnable {
         }
 
         //Get the chapters now
-        int chapterIndex = neededChapters.size() - 1;
+        int chapterIndex = neededChapters.size();
         int chapter;
         int numberOfRequests = 0;
         FileOutputStream output;
 
         while (!neededChapters.isEmpty()) {
-            if (chapterIndex > neededChapters.size()) {
+            chapterIndex--;
+
+            if (chapterIndex >= neededChapters.size()) {
                 chapterIndex = neededChapters.size() - 1;
             }
             chapter = neededChapters.get(chapterIndex);
@@ -214,7 +216,7 @@ public class ClientRunnable implements Runnable {
             clientChapterGetStats.addTotalChapterSize(totalSize);
 
             System.out.println("INFO: ClientServer successfully downloaded file " + chapter);
-            neededChapters.remove(chapter);
+            neededChapters.remove(chapterIndex);
         }
 
         System.out.println("INFO: Successfully downloaded all files");
