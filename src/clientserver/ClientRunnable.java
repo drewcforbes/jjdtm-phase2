@@ -203,7 +203,7 @@ public class ClientRunnable implements Runnable {
             clientChapterGetStats.addTotalChapterGetTime(totalChapterTimeFinish - totalChapterTimeStart);
             clientChapterGetStats.addTotalChapterSize(totalSize);
 
-            System.out.println("INFO: ClientServer successfully got chapter " + chapter);
+            System.out.println("INFO: ClientServer successfully downloaded file " + chapter);
 
         }
         long totalTime = System.nanoTime() - totalTimeStart;

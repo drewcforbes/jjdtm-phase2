@@ -33,30 +33,22 @@ public class ServerRequestHandler implements Runnable {
     public void run() {
         long totalTimeStart = System.nanoTime();
 
-        System.out.println("Got server request");
-
         OutputStream out;
         BufferedReader in;// reader (for reading from the machine connected to)
     	try {
             //(A) Receive a TCP connection
     	    out = clientRequestSocket.getOutputStream();
-            System.out.println("Got output stream");
             in = new BufferedReader(new InputStreamReader(clientRequestSocket.getInputStream()));
    		} catch (IOException e) {
             System.err.println("FATAL: ServerRequestHandler: Client failed to connect: " + e.getMessage());
             return;
         }
 
-        System.out.println("made streams");
-
     	// Initial sends/receives
     	try {
 
             //(B) read the chapter number from that connection,
             String chapterRequested = in.readLine();
-            System.out.println("Getting Chapter: " + chapterRequested);
-            System.out.println("Connected to the client seeking chapter" + chapterRequested); // confirmation of connection
-
             //read the chapter from the file system,
             File file = new File(String.format(config.getFileSubstitutionFormat(), Integer.parseInt(chapterRequested)));
             FileInputStream fis = new FileInputStream(file);
@@ -72,7 +64,6 @@ public class ServerRequestHandler implements Runnable {
 
             while (current != fileLength) {
                 int size = 10000;
-                System.out.println("Current size: " + current + " File size: " + fileLength);
                 if(fileLength - current >= size) {
                     current += size;
                 } else {
@@ -93,7 +84,6 @@ public class ServerRequestHandler implements Runnable {
                 totalRequestTime += writeTime;
                 serverPacketStats.addPacketSendTime(writeTime);
 
-                System.out.print("Sending file ... " + (current*100) / fileLength + "% complete!");
                 out.flush();
             }
 
@@ -103,10 +93,10 @@ public class ServerRequestHandler implements Runnable {
             //File transfer done. Close the socket connection!
             bis.close();
             clientRequestSocket.close();   //JP Watch this for possible bug
-            System.out.println("File sent succesfully!");
+            System.out.println("INFO: Served file " + chapterRequested + " successfully");
 
         } catch (IOException e) {
-            System.err.println("Could not listen to socket.");
+            System.err.println("Could not listen to socket. " + e.getMessage());
         }
 
         long totalTimeFinish = System.nanoTime();
